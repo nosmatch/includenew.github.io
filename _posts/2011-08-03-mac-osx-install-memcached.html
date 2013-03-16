@@ -1,0 +1,22 @@
+---
+layout: post
+title: Mac OSX 安装memcached
+categories:
+- Mac
+- 未分类
+tags:
+- Mac; memcached
+published: true
+comments: true
+---
+<p>1.确保本机上已经装了Xcode，可以从随机附带的DVD中获取，或者到 Apple Developer Connection下载安装。2.从 shell script from topfunky.net (mirror) 下载安装脚本，该脚本会自动完成memcached的安装，包括相应的依赖包<br />
+3.执行下载的脚本，
+<pre class="brush:shell">$ chmod +x install-memcached.sh
+$ sudo ./install-memchaced.sh</pre>
+4.在环境变量里添加EVENT_NOKQUEUE=1<br />
+5.验证是否成功， $memcached -h，应该产生帮助提示
+<a href="/images/uploads/2011/07/Screen-shot-2011-08-03-at-11.12.50-AM.png"><img class="aligncenter size-full wp-image-35" title="Screen shot 2011-08-03 at 11.12.50 AM" src="/images/uploads/2011/07/Screen-shot-2011-08-03-at-11.12.50-AM.png" alt="" width="607" height="423" /></a>
+6.启动memcached,
+<pre class="brush:shell">$memcached -m 32 -p 11211 -d</pre>
+参考文档<br />
+http://www.lullabot.com/articles/setup-memcached-mamp-sandbox-environment</p>

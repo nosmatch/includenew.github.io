@@ -1,0 +1,13 @@
+---
+layout: 'post'
+title: 'maven报错Requested org.apache.maven.archetypes:maven-archetype-quickstart:jar'
+categories: 'JavaEE'
+tags: ''
+---
+<p>今天重新安装maven，打包创建项目，mvn archetype:create -DgroupId=org.sonatype.mavenbook.ch03 /</p>
+<p>-DartifactId=simple /</p>
+<p>-DpackageName=org.sonatype.mavenbook</p>
+<p>结果报错Build Error：</p>
+<p>Requested org.apache.maven.archetypes:maven-archetype-quickstart:jar</p>
+<p>查了半天也不知道为什么，明明存在archetypes插件，却说找不到，最后决定把本地库全部都删除，然后重新创建项目，没问题了&hellip;&hellip;</p>
+<p>神奇~</p>

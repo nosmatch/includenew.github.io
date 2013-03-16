@@ -1,0 +1,13 @@
+---
+layout: 'post'
+title: 's3c2410开发日志——关于yaffs无法解压'
+categories: '嵌入式开发'
+tags: ''
+---
+<p>今天终于把yaffs挂载上去了~不容易啊~~记录一下。<br />原来出现的问题：<br />mount: Mounting /dev/mtdblock/1 on /mnt/yaffs failed: No such file or directory<br />然后能够进入根文件系统cramfs中，终端输出如下：<br />BusyBox v1.00 (2005.01.20-11:59+0000) Built-in shell (ash)<br />Enter 'help' for a list of built-in commands.</p>
+<p>runing /etc/profile ok<br />[/mnt/yaffs]<br />然后按照指导书上的方法将yaffs.tar.bz2通过ftp上传到目标板中，解压，出现错误如下：<br />[~/tmp]tar -jvxf yaffs.tar.bz2 -C /mnt/yaffs<br />./ad<br />./ad/s3c2410-adc.o<br />tar: Cannot create directory `./ad': Operation not permitted<br />tar: ./ad/s3c2410-adc.o: No such file or directory<br />无法在/mnt/yaffs目录下进行任何操作。</p>
+<p>原因分析：<br />vivi中有两种分区格式，bon和mtd，<br />bon分区用bon part命令来分区，内核在启动的是后在bon分区里查找内核，和根文件系统，但是如果想挂载</p>
+<p>yaffs系统，就必须在bon分区中指定一个mtd分区，方法是在该分区后加一个:m，例如<br />bon part 0 128K 192K 1216K 6336K:m<br />这个命令就是将最后一个分区指定为mtd分区。<br />还有一点就是，part分区的时候为每个分区指定了名字，使用vivi下载的时候需要这个名字，因此，part分区中</p>
+<p>kernel，root，的起止地址要相同，否则会出现根文件系统无法下载。</p>
+<p>关于bon分区和mtd分区的具体区别还不清楚，目前只知道这样可以解决困扰了三天的问题。<br />2.6内核还是移植不上来，分区也已经改了，但是还是不行，网上的一个人说可能是内核的问题，下了一个</p>
+<p>2.6.22，还没来的及试。<br />基本上就这样吧</p>

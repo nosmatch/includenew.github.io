@@ -1,0 +1,57 @@
+---
+layout: post
+title: "Webx3源码分析－容器结构"
+date: 2011-08-17 19:32
+comments: true
+categories: webx 
+---
+
+### 一、Webx 框架概述
+Webx是一套基于Java Servlet API构建的通用Web框架。整个Webx框框架层次分为三层：
+
+![image](/images/webx/webx-framework-layer.png)
+
+
+1. SpringExt：提供了基于Spring的通用扩展机制
+2. WebxFramework：基于Servlet API，提供Web基础服务，如Spring初始化，日志初始化，接受请求，错误处理，开发模式等。Webx Framework只是对Servlet和spring的基础封装，并不关心Web框架中具体服务的处理，如Action处理，表单处理等。因此，可以在Webx Framework上扩展多种风格的Web框架。
+3. Webx Turbine：基于Webx Framework，提供具体的网页功能，如表单处理，Action相应处理等
+
+### 二、Webx Framework容器结构
+#### 1.1组件化应用结构
+Webx Framework是基于组件化风格构建的，它将一个应用划分一个Webx应用包含至少一个组件组 (WebxComponents)，一个组件组由多个组件(WebxComponent)构成。
+
+![image](/images/webx/webx-component.png)
+
+
+Webx Framework中定义了WebxComponents接口和WebxComponent接口，分别表示一组组件的信息和一个组件的描述。
+组件化的应用结构反应在容器上即应用中级联的父子容器的结构关系，如下图所示：
+
+![image](/images/webx/webx-context-structure.png)
+
+
+
+Webx Framework将一个Web应用分解成多个小应用模块：app1, app2，等。每个应用模块独享一个子容器（Sub Context），共享根容器（Root Context）。子容器之间的beans无法相互注入，但是所有小应用都共享一个Root Context。根容器的bean可以被注入到子容器的bean中；反之不可以。
+
+#### 1.2 基于Spring的容器类扩展
+为实现上述应用组件化结构，Webx Framework在在Spring容器基础上按照组件化风格进行扩展：
+
+![image](/images/webx/webx-container.png)
+
+
+com.alibaba.citrus.webx.context.XmlWebApplicationContext是Webx框架的从XML文件中装配的，用于Web应用环境的Application Context，扩展自Spring的org.springframework.web.context.support.XmlWebApplicationContext，主要扩展点如下：
+
+1. 支持SpringExt的捐献(ConfigurationPoint)机制（SpringExt在后面文章中讲解）
+2. 实现了ResourceLoadingExtendable接口，扩展的resource loading机制。假如ResourceLoadingExtender 被设置，则使用它来装载资源，否则使用默认的装载器。
+3. 默认开启annotation config，相当于<context:annotation-config/>。
+4. 假如parentResolvableDependenciesAccessible==true，则支持从parent context中取得预先置入resolvableDependencies中的对象。默认为true。
+
+ResourceLoadingXmlWebApplicationContext继承自XmlWebApplicationContext，扩展了从resource loading service中装载的功能。WebxApplicationContext是用于Webx框架的application context。直接继承自ResourceLoadingXmlWebApplicationContext，扩展了取得默认Spring配置的实现，默认Root容器的配置文件位于WEB-INF/webx.xml，子容器的配置文件位于WEB-INF/webx-*.xml（*代表component名）。由于继承关系，WebxApplicationContext继承了负累所有的特性，在原来Spring容器XmlWebApplicationContext基础之上扩展如下功能：
+
+1. 支持SpringExt，包括configuration point和resource loading支持
+2. 定义默认容器配置文件位置
+
+WebxComponentsContext和WebxComponentContext直接扩展自WebxApplicationContext，分别对应为WebxComponents和WebxComponent的容器。
+
+WebxComponentsContext中内置了一个WebxComponentsLoader用于装载Webx components，并且覆写了postProcessBeanFactory()处理定制BeanFactory，以及finishRefresh()处理子容器的刷新。
+
+WebxComponentContext包含了对应的WebxComponent实例，并将其注入到容器中，即在一个WebxComponentContext中，引用的WebxComponent均是其对应的component实例。

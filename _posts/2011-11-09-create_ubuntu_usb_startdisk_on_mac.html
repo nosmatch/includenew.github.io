@@ -1,0 +1,63 @@
+---
+layout: post
+title: Mac上制作Ubuntu USB启动盘
+categories:
+- Mac
+- 技术生活
+tags: []
+published: true
+comments: true
+---
+<p><strong>Mac上制作Ubuntu USB启动盘</strong></p>
+
+<p><strong>一、下载ubuntu iso镜像</strong></p>
+
+<p><strong>二、将iso转换为img文件</strong></p>
+
+<p>$ hdiutil convert -format UDRW -o /path/to/generate/img/file /path/to/your/iso/file</p>
+
+<p>该命令会生成一个.img的磁盘镜像文件，但是mac osx会默认追加一个.dmg，即生成的文件后缀是.img.dmg，这个后缀没关系，可以忽略</p>
+
+<p><strong>三、查看USB的盘符</strong></p>
+
+<p>$ diskutil list</p>
+
+<p>/dev/disk0</p>
+
+<p>#:                       TYPE NAME                    SIZE       IDENTIFIER</p>
+
+<p>0:      GUID_partition_scheme                        *250.1 GB   disk0</p>
+
+<p>1:                        EFI                         209.7 MB   disk0s1</p>
+
+<p>2:                  Apple_HFS Macintosh HD            249.2 GB   disk0s2</p>
+
+<p>3:                 Apple_Boot Recovery HD             650.0 MB   disk0s3</p>
+
+<p>/dev/disk1</p>
+
+<p>#:                       TYPE NAME                    SIZE       IDENTIFIER</p>
+
+<p>0:     FDisk_partition_scheme                        *4.0 GB     disk1</p>
+
+<p>1:                 DOS_FAT_32 UNTITLED                4.0 GB     disk1s1</p>
+
+<p>该命令查看当前系统上挂载的磁盘，其中/dev/disk1是我的USB磁盘。不同的系统disk后的数字可能不一样，但一般都是diskN的模式</p>
+
+<p><strong>四、卸载USB磁盘</strong></p>
+
+<p>$ diskutil unmountDisk /dev/disk1</p>
+
+<p>Unmount of all volumes on disk1 was successful</p>
+
+<p>使用diskutil unmountDisk卸载USB磁盘，注意卸载（umount）与弹出(eject)的区别:)</p>
+
+<p><strong>五、将镜像写入USB</strong></p>
+
+<p>$ sudo dd if=ubuntu.img.dmg of=/dev/rdisk1 bs=1m</p>
+
+<p>将第二步生成的img文件写入到USB磁盘/dev/rdisk1。</p>
+
+<p><strong>六、弹出USB</strong></p>
+
+<p>$ diskutil eject /dev/disk1</p>

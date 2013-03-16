@@ -1,0 +1,34 @@
+---
+layout: 'post'
+title: 'linux锐捷上网-mentohust'
+categories: 'Linux'
+tags: ''
+---
+<p>今天终于能用linux上网了，自从换了校园网，用上那个该死的锐捷，已经告别可爱的Ubuntu很久了，差了很多资料，一直无法上，无论是锐捷官方客户端xrgsu，还是xsuppclient,或者ruijieclient，都是有错误，最后找到了一个很好用的mentohust(http://code.google.com/p/mentohust/)华科的牛人开发的锐捷客户端，更新的比较及时，很不错，赞一个，而且安装非常简单，我是Ubuntu，直接下载了deb包，安装完成后，修改/etc/mentohust.conf:<br />
+&nbsp;&nbsp;&nbsp; ;(U)用户名，长度不超过64<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Username=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(P)密码，长度不超过64<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Password=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(N)网卡<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Nic=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(I)静态IP用户可以使用非本机IP<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; IP=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(G)网关，无关紧要<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Gateway=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(S)DNS服务器，无关紧要<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DNS=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(F)认证数据包，如果需要校验客户端，就需要正确设置，否则不必自找麻烦<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Package=/etc/mentohust/3_50.mpf<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(T)每次发包超时时间（秒）<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Timeout=3<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(E)发送Echo包的间隔（秒）<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EchoInterval=30<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(R)定时重连间隔（分）（如果学校支持使用私有地址认证，就可以把自动重连间隔设短一点，因为这种情况除非掉线才真正开始重连，否则建议设为0）<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; AutoReconnect=<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(A)寻找服务器时的组播地址类型 0标准 1私有<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; StartAddress=1<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(D)DHCP方式 0(不使用) 1(二次认证) 2(认证后) 3(认证前)<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DhcpMode=0<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ;(C)进行DHCP的脚本（可以为dhclient eth0等）<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; DhcpScript=dhclient<br />
+将里面的选项都配置成和你学校配置相同就可以了，具体使用请参考官方wiki(http://code.google.com/p/mentohust/wiki/FAQ)</p>

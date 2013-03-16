@@ -1,0 +1,27 @@
+---
+layout: 'post'
+title: 'Linux批量转换文件名编码'
+categories: 'Linux'
+tags: ''
+---
+<p>今天从网上用wget下了很多的电子书，不过文件名的编码都是GBK，系统默认为UTF-8，可以用convmv来转换文件名编码，例如将GBK编码的文件filename重命名为UTF-8：</p>
+<p><pre class="brush: ruby:nogutter">convmv -f gbk -t utf-8 filename --notest</pre>&nbsp;</p>
+<p>由于需要转换的文件比较多，写了个脚本来实现，主要就是一个文件目录的递归遍历：</p>
+<p><pre class="brush: python:nogutter">list_dir(){
+for file in $1/*
+do
+if [ -d $file ]; then
+echo "$file is dirctory"
+list_dir $file
+elif [ -f $file ]; then
+echo "convert $file..."
+convmv -f gbk -t utf-8 $file --notest
+fi
+done
+}
+if [ $# -gt 0 ]; then
+list_dir "$1"
+else
+list_dir "."
+fi
+</pre>&nbsp;</p>

@@ -1,0 +1,17 @@
+---
+layout: post
+title: 优化rails new时bundle install速度
+categories:
+- ruby
+tags: []
+published: true
+comments: true
+---
+<p>最近痴迷ruby和ror，但是每次rails new xxx时总会在bundle install 停留很久，学习了下，发现rails new时会进行bundle install，自动到rubygems.org上检查是否有更新。如果确定不需要更新，事实上是可以跳过这个步骤的，方法很简单：
+<code>
+rails new my_app --skip-bundle
+</code>
+另外在单独执行bundle install时默认也会自动检查所有更新，解决方法时
+<code>
+bundle insall --local
+</code></p>

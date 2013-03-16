@@ -1,0 +1,21 @@
+---
+layout: post
+title: Rails中常见的错误
+categories:
+- ruby
+tags:
+- rails
+published: true
+comments: true
+---
+<p><h1>Rails中常见错误总结</h1>
+<h3>NoMothedError</h3>
+NoMethodError通常表示引用了错误的方法，比如link_to写成了lunk_to。根据页面上的错误提示很容易能够定位到错误代码位于哪一行。
+<h3>NameError</h3>
+NameError常见于引用了错误的变量，比如变量不存在等
+<h3>SyntaxError: unexpected $end</h3>
+SyntaxError加上unexpected $end, expected keyword_end的错误，通常是少了end关键字。def和do必须要有对应的end。不过通常错误提示无法定位具体哪一行缺少了end，需要自己审查代码逻辑。
+<h3>invalid multibyte char(US-ASCII)</h3>
+如果使用的是Ruby1.9，出现:invalid multibyte char(US-ASCII)的时候，通常表示代码源文件中有UTF-8字符，比如中文，根据Ruby1.9规范，必须在源文件的头部加上编码注解<br />
+#encoding: utf-8<br />
+并且代码的源文件格式必须时utf-8的。</p>

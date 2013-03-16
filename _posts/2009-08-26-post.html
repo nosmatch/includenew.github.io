@@ -1,0 +1,8 @@
+---
+layout: 'post'
+title: 'Eclipse中修改Tomcat端口'
+categories: 'Linux'
+tags: ''
+---
+在Linux中新安装了Oracle，占用了原来Tomcat的8080端口，修改了tomcat中conf目录下的server.xml文件：<br /><connector port="&lt;font color="><font color="#ff0000">8080</font>" protocol="HTTP/1.1" <br />               connectionTimeout="20000" <br />               redirectPort="8443" /&gt;<br />将上面的8080改为未被占用的1024以上的端口，我改的是9000，保存后运行startup.sh脚本启动Tomcat，但是在Eclipse中，原来设置的Tomcat服务器启动时仍然报错，说8080被占用，tomcat无法启动，解决方法如下：<br />在server面板中（如果没有，通过windows-&gt;show view-&gt;Other-&gt;servers打开）删除原来设置的tomcat服务器，重启Eclipse，重新设置一个服务器，启动，一切正常了～<br />～Good Luck~<br /><br /><div class="zemanta-pixie"><img class="zemanta-pixie-img" alt="" src="http://img.zemanta.com/pixy.gif?x-id=d55ce718-3dc4-86e1-abe6-bc4529e04031" /></div>
+</connector>

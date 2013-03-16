@@ -1,0 +1,65 @@
+---
+layout: 'post'
+title: 'IAR开发环境中添加头文件'
+categories: '嵌入式开发'
+tags: ''
+---
+&nbsp;
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">今天在添加<span style="font-family: Times New Roman;">uart</span>
+<span style="font-family: 宋体;">驱动时，需要向现有的</span>
+<span style="font-family: Times New Roman;">uC/OS</span>
+<span style="font-family: 宋体;">工程文件中添加头文件。</span>
+</span>
+<span style="font-size: 10.5pt; font-family: '宋体';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">1.</span>
+<span style="font-size: 10.5pt; font-family: '宋体';">直接在工程目录下新建一个目录，将<span style="font-family: Times New Roman;">uart.c</span>
+<span style="font-family: 宋体;">和</span>
+<span style="font-family: Times New Roman;">uart.h</span>
+<span style="font-family: 宋体;">添加到该目录下，</span>
+</span>
+<span style="font-size: 10.5pt; font-family: '宋体';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">2.</span>
+<span style="font-size: 10.5pt; font-family: '宋体';">在工程项目上右键<span style="font-family: Times New Roman;">-&gt;add-&gt;add&nbsp;group</span>
+<span style="font-family: 宋体;">，添加一个组</span>
+<span style="font-family: Times New Roman;">uC-UART</span>
+</span>
+<span style="font-size: 10.5pt; font-family: '宋体';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">3.</span>
+<span style="font-size: 10.5pt; font-family: '宋体';">在该组上继续右键<span style="font-family: Times New Roman;">-&gt;add-&gt;add&nbsp;file</span>
+<span style="font-family: 宋体;">，添加</span>
+<span style="font-family: Times New Roman;">uart.c</span>
+<span style="font-family: 宋体;">和</span>
+<span style="font-family: Times New Roman;">uart.h</span>
+</span>
+<span style="font-size: 10.5pt; font-family: '宋体';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt; text-align: center;"><span style="font-size: 10.5pt; font-family: '宋体';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">4.</span>
+<span style="font-size: 10.5pt; font-family: '宋体';">修改<span style="font-family: Times New Roman;">includes.h</span>
+<span style="font-family: 宋体;">，添加</span>
+<span style="font-family: Times New Roman;">#include&nbsp;&lt;uart.h&gt;</span>
+</span>
+<span style="font-size: 10.5pt; font-family: '宋体';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">5.</span>
+<span style="font-size: 10.5pt; font-family: '宋体';">此时直接编译会报错说无法找到<span style="font-family: Times New Roman;">&lt;uart.h&gt;</span>
+<span style="font-family: 宋体;">，还需要将上述目录添加到编译路径中，右键工程</span>
+<span style="font-family: Times New Roman;">-&gt;option-&gt;C/C++&nbsp;Compiler-&gt;preprocessor</span>
+<span style="font-family: 宋体;">，将</span>
+<span style="font-family: Times New Roman;">uart.h</span>
+<span style="font-family: 宋体;">所在路径添加到</span>
+<span style="font-family: Times New Roman;">include</span>
+<span style="font-family: 宋体;">路径中</span>
+</span>
+<span style="font-size: 10.5pt; font-family: 'Times New Roman';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt; text-align: center;"><span style="font-size: 10.5pt; font-family: 'Times New Roman';"></span>
+</p>
+<p class="p0" style="margin-bottom: 0pt; margin-top: 0pt;"><span style="font-size: 10.5pt; font-family: '宋体';">6.</span>
+<span style="font-size: 10.5pt; font-family: '宋体';">重新编译，就没有错误了。</span>
+<span style="font-size: 10.5pt; font-family: 'Times New Roman';"></span>
+</p>

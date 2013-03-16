@@ -1,0 +1,32 @@
+---
+layout: 'post'
+title: '查询外网IP并发送邮件的脚本'
+categories: 'Linux'
+tags: ''
+---
+<p>泡论坛时发现的小问题，自己做了下，记录如下：</p>
+<p>问题：如何查询服务器的外网IP并发送到指定邮箱？</p>
+<p>解决办法：</p>
+<p><pre class="brush: c-sharp">  1 #!/bin/sh
+  2 
+  3 
+  4 ip=`curl -s 'http://checkip.dyndns.org' | sed 's/.*Current IP Address: /([0-    9/.]*/).*//1/g'`
+  5 echo &quot;Sending ip $ip...&quot;
+  6 
+  7 to=&quot;yourmail@yourdomain.com&quot;
+  8 subject=&quot;IP&quot;
+  9 message=&quot;IP is $ip&quot;
+ 10 headers=&quot;From:server@serverdomain&quot;
+ 11 echo $message | mail -s $subject $to -- -f $headers
+ 12 echo &quot;Send OK!&quot;
+</pre></p>
+<p>&nbsp;</p>
+<p>大概思路：</p>
+<p>首先通过查询&nbsp; http://checkip.dyndns.org获取外网IP，得到一个HTML页，sed过滤道多余的HTML标签，获得准确的IP</p>
+<p>然后通过sendmail发送邮件到指定邮箱</p>
+<p>需要安装curl和sendmail</p>
+<p>&nbsp;</p>
+<p><pre class="brush: c-sharp:nogutter">sudo apt-get install curl
+sudo apt-get install sendmail</pre>
+</p>
+<p>sendmail的配置比较复杂，不过可以使用默认的配置也能够发送邮件。</p>

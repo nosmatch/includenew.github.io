@@ -1,0 +1,79 @@
+---
+layout: 'post'
+title: 'ubuntu在机房上网'
+categories: 'Linux'
+tags: ''
+---
+<p>最近资金紧张，没钱交网费，只好到机房上网了，不过又怀念自己的linux，因此在机房的机器上装了个Ubuntu。下面简要记录下如何配置上网。</p>
+<p>Ubuntu默认安装的是DHCP<br />
+# The primary network interface
+<br />
+auto eth0
+<br />
+iface eth0 inet dhcp
+<br />
+&nbsp;<br />
+先要取消DHCP<br />
+编辑/etc/network/interfaces
+<br />
+$sudo vim /etc/network/interfaces<br />
+# The primary network interface
+<br />
+auto eth0
+<br />
+#iface eth0 inet dhcp
+<br />
+&nbsp;<br />
+设置IP地址和网关地址<br />
+# The primary network interface
+<br />
+iface eth0 inet static
+<br />
+address 192.168.4.148
+<br />
+netmask 255.255.255.0
+<br />
+gateway 192.168.4.254</p>
+<p>设置DNS服务器地址,编辑文件/etc/resolv.conf<br />
+$sudo vim /etc/resolv.conf
+<br />
+nameserver 202.118.224.101
+<br />
+nameserver 202.106.0.20
+<br />
+&nbsp;<br />
+重启eth0<br />
+$sudo ifdown eth0
+<br />
+$sudo ifup eth0</p>
+<p>机房有时会限制MAC地址，修改MAC地址命令如下<br />
+$sudo ifconfig eth0 up
+<br />
+$sudo ifconfig eth0 hw ether 00:10:5C:E1:63:E1
+<br />
+$sudo ifconfig eth0 down</p>
+<p>
+不过每次重启后都会失效<br />
+&nbsp;自己写了一个脚本</p>
+<p>#!/bin/sh<br />
+echo &quot; **************************************************************&quot;<br />
+echo &quot; *&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Configure IP&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; *&quot;<br />
+echo &quot; * Copyright by Jiang Bo &lt;jiang_eis@hotmail.com&gt; 2009.6.10&nbsp;&nbsp;&nbsp; *&quot;<br />
+echo &quot; **************************************************************&quot;<br />
+<br />
+echo &quot; shut down eth0...&quot;<br />
+ifconfig eth0 down<br />
+<br />
+echo &quot; configure MAC...&quot;<br />
+ifconfig eth0 hw ether 00:10:5C:E1:63:E1<br />
+<br />
+echo &quot; configure ip address...&quot;<br />
+ifconfig eth0 192.168.4.148 netmask 255.255.255.0<br />
+<br />
+echo &quot; configure gateway address...&quot;<br />
+route add default gw 192.168.4.254<br />
+<br />
+echo &quot; set up eth0...&quot;<br />
+ifconfig eth0 up</p>
+<p>&nbsp;</p>
+<p>每次重启后直接执行这个脚本就行了^^</p>

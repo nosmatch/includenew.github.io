@@ -1,0 +1,18 @@
+---
+layout: 'post'
+title: 'Ubuntu9.04安装Oracle XE'
+categories: 'Linux'
+tags: ''
+---
+<p>&nbsp;</p>
+<p>一直听说Ubuntu上安装Oracle相当麻烦，今天体验了一把，可能比较幸运，没出什么问题，简单记录一下，先声明，我装的是Oracle XE版，也就是官网上所说的快捷版，企业版的安装要麻烦的多，而且好想也不支持Ubuntu。</p>
+<p>简单来说步骤如下：</p>
+<p>1.将http://oss.oracle.com/debian unstable non-free添加到软件源中</p>
+<p>2.添加密钥 sudo apt-key add RPM-GPG-KEY-oracle（不过我安装时提示密钥无效，但最后也装上了，不了解）</p>
+<p>3.sudo apt-get update更新（不过我添加后立即更新没能什么都没有，没什么反应，过了几个小时自动更新里提示安装）</p>
+<p>4.正常的话会自动安装</p>
+<p>5.配置数据库 sudo /etc/init.d/oracle-xe configure，这里包括监听端口号，http端口，以及帐户密码等选项，默认安装就可以了，当然，密码要自己设。</p>
+<p>6.安装完成后，网上很多人提示说是要配置环境变量，但是我发现安装过程自己配置了，可以通过echo $ORACLE_HOME等方法查看一下，没设自己设一下把</p>
+<p>6.正常在GNOME环境中会在应用程序栏中添加Oracle菜单栏，选择转至数据库主页，正常的话就能够打开数据库主页，地址为：http://127.0.0.1:8080/apex，(8080是你在配置时设置的端口号，我的默认就是8080),然后输入用户名密码登录就OK了</p>
+<p>～～～看似简单，哈～希望大家也想我一样顺利哈～继续学习中～</p>
+<p>&nbsp;</p>

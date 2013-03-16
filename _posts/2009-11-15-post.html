@@ -1,0 +1,43 @@
+---
+layout: 'post'
+title: 'Android示例HelloGallery中R.styleable unresolved的解决办法'
+categories: 'Android'
+tags: ''
+---
+<p>&nbsp; &nbsp;&nbsp; 今天尝试编译Android SDK中APIDemos中的程序，调试到HelloGallery的时候，在下面这段代码中：<pre class="brush: java">public ImageAdapter(Context c) {
+        mContext = c;
+        TypedArray a = obtainStyledAttributes(android.R.styleable.Theme);
+        mGalleryItemBackground = a.getResourceId(
+                android.R.styleable.Theme_galleryItemBackground, 0);
+        a.recycle();
+    }</pre>
+&nbsp;</p>
+<p>&nbsp;&nbsp;&nbsp; 编译出错，提示说android.R.styleable unresolved，在网上查了下，说R.styleable在SDK1.5中已经不再支持，所以会出现这个错误。解决方法如下：</p>
+<p>1.在res/values目录下新建attrs.xml，在其中添加如下内容：</p>
+<p><pre class="brush: xhtml">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+&lt;resources&gt;
+	&lt;declare-styleable name=&quot;Gallery&quot;&gt;
+        &lt;attr name=&quot;android:galleryItemBackground&quot;&gt;
+        &lt;/attr&gt;
+    &lt;/declare-styleable&gt;
+&lt;/resources&gt;</pre>
+</p>
+<p>2.修改HelloGallery.java，将出错的那段代码：</p>
+<p><pre class="brush: java">public ImageAdapter(Context c) {
+        mContext = c;
+        TypedArray a = obtainStyledAttributes(android.R.styleable.Theme);
+        mGalleryItemBackground = a.getResourceId(
+                android.R.styleable.Theme_galleryItemBackground, 0);
+        a.recycle();
+    }</pre>
+</p>
+<p>修改为：</p>
+<p><pre class="brush: java">public ImageAdapter(Context c) {
+        	mContext = c;
+            TypedArray a = obtainStyledAttributes(R.styleable.Gallery);
+            mGalleryItemBackground = a.getResourceId(
+                    R.styleable.Gallery_android_galleryItemBackground, 0);
+            a.recycle();
+        }</pre>
+</p>
+<p>3.重新运行就可以了</p>

@@ -1,0 +1,40 @@
+---
+layout: 'post'
+title: 'linux批量重命名方法'
+categories: 'Linux'
+tags: ''
+---
+<p>经常会遇到需要批量重命名文件的情况，用鼠标太夸张了，简单总结两种比较简单的方法：</p>
+<p>问题：</p>
+<p>存在大量html文件，需要重命名为htm文件</p>
+<p>1.rename</p>
+<p>通常重命名的命令是mv，Larry Wall写的rename具有更强大的功能。能够用perl的正则语法结构进行文件重命名。<pre class="brush: css:nogutter">NAME
+       rename - renames multiple files
+SYNOPSIS
+       rename [ -v ] [ -n ] [ -f ] perlexpr [ files ]
+DESCRIPTION
+       &quot;rename&quot; renames the filenames supplied according to the rule specified
+       as the first argument.  The perlexpr argument is a Perl expression
+       which is expected to modify the $_ string in Perl for at least some of
+       the filenames specified.  If a given filename is not modified by the
+       expression, it will not be renamed.  If no filenames are given on the
+       command line, filenames will be read via standard input.
+       For example, to rename all files matching &quot;*.bak&quot; to strip the
+       extension, you might say
+               rename 's//.bak$//' *.bak
+       To translate uppercase names to lower, you'd use
+               rename 'y/A-Z/a-z/' *&nbsp;</pre>
+</p>
+<p>上面是rename的man手册，针对上面重命名html文件的问题，解决如下：</p>
+<p>rename 's/.html$/.htm/' *.html</p>
+<p>简单来说就是重命名所有html文件（*.html），将文件名结尾处.html替换为.htm('s/.html$/.htm/')，其实更简单的表达式可以为's/l$//'</p>
+<p>2.printf</p>
+<p>使用shell命令中的prinf打印出需要的文件名，然后在使用mv重命名</p>
+<p>for i in *.html</p>
+<p>do</p>
+<p>newname=&quot;`printf &quot;%s&quot; ${i/html}`&quot;htm</p>
+<p>mv $i $newname</p>
+<p>done</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>

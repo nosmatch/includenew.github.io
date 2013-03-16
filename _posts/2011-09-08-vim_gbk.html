@@ -1,0 +1,21 @@
+---
+layout: post
+title: vim支持GBK编码
+categories:
+- Linux
+tags:
+- vim;ubuntu
+published: true
+comments: true
+---
+<p><h2><strong>一、让ubuntu支持GBK编码</strong></h2>
+Ubuntu默认对中文只支持UTF-8编码，可以通过一些修改让Ubuntu支持GBK编码。</p>
+
+<p>首先用gedit /var/lib/locales/supported.d/local来修改 /var/lib/locales/supported.d/local文件，在文件中添加如下内容：<br />
+zh_CN.UTF- 8 UTF- 8<br />
+en_US.UTF- 8 UTF- 8<br />
+zh_CN.GBK GBK<br />
+zh_CN.GB2312 GB2312<br />
+接着用sudo dpkg-reconfigure --force locales强制更新设置
+<h2><strong>二、设置Vimrc支持GBK</strong></h2>
+set fileencodings=utf-8,gbk,gb2312</p>
