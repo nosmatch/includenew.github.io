@@ -4,7 +4,7 @@
  <title>非纯种程序猿</title>
  <link href="http://jiang-bo.github.com/" rel="self"/>
  <link href="http://jiang-bo.github.com"/>
- <updated>2013-03-16T14:07:46+08:00</updated>
+ <updated>2013-03-16T15:32:00+08:00</updated>
  <id>http://jiang-bo.github.com</id>
  <author>
    <name>姜博</name>
@@ -39,13 +39,13 @@ FileStatus结构主要如下：&lt;/p&gt;
 
 &lt;p&gt;修复后进行验证，发现，流量却是有小幅下降，并没有起到本质的变化。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/images/hdfs/filestatus_fix.png&quot; alt=&quot;filestatus_fix&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/hdfs/filestatus_fix.png&quot; alt=&quot;filestatus_fix&quot; /&gt;&lt;/p&gt;
 
 &lt;h2&gt;重新排查&lt;/h2&gt;
 
 &lt;p&gt;重新观察流量情况，发现NN有显著的out流量增长，但是对应RaidNode上并没有显著的In流量增长，并且发现关闭RaidNode后，NN的out流量并不会立即下降，而当kill掉所有Raid Job后，NN流量显著下降。&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/images/hdfs/find_job.png&quot; alt=&quot;find_job&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/hdfs/find_job.png&quot; alt=&quot;find_job&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;14：00停掉RaidNode，但Raid job继续运行的情况下，发现namenode的网络流量并没有变化，仍然居高不下。而当杀掉正在运行的3个Raid job以后，namenode流量立刻有一个大幅度的下降。由此可以推测流量上涨和Raid Job有关。&lt;/p&gt;
 
@@ -66,7 +66,7 @@ FileStatus结构主要如下：&lt;/p&gt;
 
 &lt;p&gt;得到NN的网络流量结果如下：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/images/hdfs/test_confg.png&quot; alt=&quot;test_confg&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/hdfs/test_confg.png&quot; alt=&quot;test_confg&quot; /&gt;&lt;/p&gt;
 
 &lt;ol&gt;
 &lt;li&gt;流量第一次增长是在200个blockSize=1M的文件进行raid&lt;/li&gt;
@@ -88,7 +88,7 @@ FileStatus结构主要如下：&lt;/p&gt;
 
 &lt;p&gt;修改后进行了测试，通过对20个大小为200M，blockSize=1M的文件进行raid，在raid job运行时，NN的网络情况对比如下图所示：&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/images/hdfs/fix_config.png&quot; alt=&quot;fix_config&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/images/hdfs/fix_config.png&quot; alt=&quot;fix_config&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;14:05的峰值为修改前版本的raid job运行时NN out流量峰值，12M/s左右
 14:41的峰值为修改后的版本，峰值为3.5M/s左右.
@@ -4089,7 +4089,7 @@ make install
 
 &lt;h3&gt;slab初始化&lt;/h3&gt;
 
-&lt;p&gt;Memcache启动时会进行slab初始化（参见slabs.c中slabs_init()函数），默认最小的chunksize为80（查看源码会发现settings中chunk_size默认为48，但是实际还需要加上一个32bytes的item结构体），可以通过-n参数调整，按照然后按照factor（默认为1.25，可以通过-f参数调整）(&lt;em&gt;关于参数更多的memcache默认参数可以参考memcache.c中settings的设置&lt;/em&gt;)比例递增，划分出多个不同chunk大小的slab空间，即slab1的chunk大小=80，slab2的chunk大小为80*1.25=100，slab3的chunk大小为80*1.25*1.25=125，但最大一个一个chunk不会大于一个Page的大小（默认1M）。&lt;/p&gt;
+&lt;p&gt;Memcache启动时会进行slab初始化（参见slabs.c中slabs_init()函数），默认最小的chunksize为80（查看源码会发现settings中chunk_size默认为48，但是实际还需要加上一个32bytes的item结构体），可以通过-n参数调整，按照然后按照factor（默认为1.25，可以通过-f参数调整）(_关于参数更多的memcache默认参数可以参考memcache.c中settings的设置_)比例递增，划分出多个不同chunk大小的slab空间，即slab1的chunk大小=80，slab2的chunk大小为80*1.25=100，slab3的chunk大小为80*1.25*1.25=125，但最大一个一个chunk不会大于一个Page的大小（默认1M）。&lt;/p&gt;
 
 &lt;pre&gt;&lt;code&gt;一下代码节选自 slabs.c
  95 void slabs_init(const size_t limit, const double factor, const bool prealloc) {

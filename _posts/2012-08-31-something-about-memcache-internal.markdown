@@ -75,7 +75,7 @@ Memcache将分配给它的内存（-m 参数指定，默认64m）按照Chunk大�
 ##Slab内存分配
 ###slab初始化
 
-Memcache启动时会进行slab初始化（参见slabs.c中slabs_init()函数），默认最小的chunksize为80（查看源码会发现settings中chunk_size默认为48，但是实际还需要加上一个32bytes的item结构体），可以通过-n参数调整，按照然后按照factor（默认为1.25，可以通过-f参数调整）(_关于参数更多的memcache默认参数可以参考memcache.c中settings的设置_)比例递增，划分出多个不同chunk大小的slab空间，即slab1的chunk大小=80，slab2的chunk大小为80\*1.25=100，slab3的chunk大小为80\*1.25*1.25=125，但最大一个一个chunk不会大于一个Page的大小（默认1M）。
+Memcache启动时会进行slab初始化（参见slabs.c中slabs\_init()函数），默认最小的chunksize为80（查看源码会发现settings中chunk\_size默认为48，但是实际还需要加上一个32bytes的item结构体），可以通过-n参数调整，按照然后按照factor（默认为1.25，可以通过-f参数调整）(\_关于参数更多的memcache默认参数可以参考memcache.c中settings的设置\_)比例递增，划分出多个不同chunk大小的slab空间，即slab1的chunk大小=80，slab2的chunk大小为80\*1.25=100，slab3的chunk大小为80\*1.25\*1.25=125，但最大一个一个chunk不会大于一个Page的大小（默认1M）。
 
 	一下代码节选自 slabs.c
 	 95 void slabs_init(const size_t limit, const double factor, const bool prealloc) {
@@ -137,7 +137,7 @@ Memcache启动时会进行slab初始化（参见slabs.c中slabs_init()函数）�
 PS：prealloc指的是直接申请一个大的chunk存放所有数据，默认是不采用这种方式的。
 
 ###数据存储过程
-一个数据项的大致存储量过程可以理解为（完整代码较长，不在粘贴，具体可参见items.c中do_item_alloc()方法）：
+一个数据项的大致存储量过程可以理解为（完整代码较长，不在粘贴，具体可参见items.c中do\_item\_alloc()方法）：
 
 1. 构造一个数据项结构体，计算数据项的大小，（假设默认配置下，数据项大小为102B）
 2. 根据数据项的大小，找到最合适的slab，（100<102<125，所以存储在slab3中）
@@ -210,7 +210,7 @@ PS：prealloc指的是直接申请一个大的chunk存放所有数据，默认�
 	254     return ret;
 	255 }
 
-slab优先从slots（空闲chunk空间列表）中申请空间，如果没有则尝试申请一个Page的新空间（do_slab_newslab()），申请新slab是会先判断是否进行slab_reasgin（重新分配slab空间，默认不开启）。
+slab优先从slots（空闲chunk空间列表）中申请空间，如果没有则尝试申请一个Page的新空间（do\_slab\_newslab()），申请新slab是会先判断是否进行slab\_reasgin（重新分配slab空间，默认不开启）。
 
 ##内存浪费
 
@@ -218,7 +218,7 @@ slab优先从slots（空闲chunk空间列表）中申请空间，如果没有则
 
 1. Data Item Size <= Chunk Size，Chunk是存储数据项的最小单元，数据项的大小必须不大于其所在的Chunk大小。也就是说76B的数据对象存入96B的Chunk中，将带来96B-76B=20B的空间浪费。
 
-2. Memcache是按照Page申请和使用内存的，当Page大小不是Chunk的整数倍时，余下的空间将被浪费。即如果PageSize=1M，ChunkSize=1000B,那么将有1024*1024%1000=576B的空间浪费。
+2. Memcache是按照Page申请和使用内存的，当Page大小不是Chunk的整数倍时，余下的空间将被浪费。即如果PageSize=1M，ChunkSize=1000B,那么将有1024\*1024%1000=576B的空间浪费。
 
 3. Memcache默认是不开启slab reasign的，也就是说分配已经分配给一个slab的内存空间，即使该slab不用，默认也不会分配给其他slab的
 

@@ -1,9 +1,13 @@
 
+http://jiang-bo.github.com/algorithm/alg/index.html
+http://jiang-bo.github.com/algorithm.html
 http://jiang-bo.github.com/archive.html
 http://jiang-bo.github.com/atom.xml
 http://jiang-bo.github.com/categories.html
+http://jiang-bo.github.com/images/img/index.html
+http://jiang-bo.github.com/images/test/index.html
 http://jiang-bo.github.com/index.html
-http://jiang-bo.github.com/pages.html
+http://jiang-bo.github.com/new-page.html
 http://jiang-bo.github.com/rss.xml
 http://jiang-bo.github.com/sitemap.txt
 http://jiang-bo.github.com/tags.html

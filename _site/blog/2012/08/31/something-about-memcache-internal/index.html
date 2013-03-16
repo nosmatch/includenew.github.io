@@ -47,6 +47,18 @@
   
     
       
+    
+  
+    
+      
+      	
+      	<li><a href="/algorithm.html">Algorithm</a></li>
+      	
+      
+    
+  
+    
+      
       	
       	<li><a href="/archive.html">Archive</a></li>
       	
@@ -71,9 +83,13 @@
   
     
       
-      	
-      	<li><a href="/pages.html">Pages</a></li>
-      	
+    
+  
+    
+      
+    
+  
+    
       
     
   
@@ -189,7 +205,7 @@
 
 <h3>slab初始化</h3>
 
-<p>Memcache启动时会进行slab初始化（参见slabs.c中slabs_init()函数），默认最小的chunksize为80（查看源码会发现settings中chunk_size默认为48，但是实际还需要加上一个32bytes的item结构体），可以通过-n参数调整，按照然后按照factor（默认为1.25，可以通过-f参数调整）(<em>关于参数更多的memcache默认参数可以参考memcache.c中settings的设置</em>)比例递增，划分出多个不同chunk大小的slab空间，即slab1的chunk大小=80，slab2的chunk大小为80*1.25=100，slab3的chunk大小为80*1.25*1.25=125，但最大一个一个chunk不会大于一个Page的大小（默认1M）。</p>
+<p>Memcache启动时会进行slab初始化（参见slabs.c中slabs_init()函数），默认最小的chunksize为80（查看源码会发现settings中chunk_size默认为48，但是实际还需要加上一个32bytes的item结构体），可以通过-n参数调整，按照然后按照factor（默认为1.25，可以通过-f参数调整）(_关于参数更多的memcache默认参数可以参考memcache.c中settings的设置_)比例递增，划分出多个不同chunk大小的slab空间，即slab1的chunk大小=80，slab2的chunk大小为80*1.25=100，slab3的chunk大小为80*1.25*1.25=125，但最大一个一个chunk不会大于一个Page的大小（默认1M）。</p>
 
 <pre><code>一下代码节选自 slabs.c
  95 void slabs_init(const size_t limit, const double factor, const bool prealloc) {

@@ -24,12 +24,12 @@ FileStatus结构主要如下：
 ## 验证
 修复后进行验证，发现，流量却是有小幅下降，并没有起到本质的变化。
 
-![filestatus_fix](/assets/images/hdfs/filestatus_fix.png)
+![filestatus_fix](/images/hdfs/filestatus_fix.png)
 
 ## 重新排查
 重新观察流量情况，发现NN有显著的out流量增长，但是对应RaidNode上并没有显著的In流量增长，并且发现关闭RaidNode后，NN的out流量并不会立即下降，而当kill掉所有Raid Job后，NN流量显著下降。
 
-![find_job](/assets/images/hdfs/find_job.png)
+![find_job](/images/hdfs/find_job.png)
 
 14：00停掉RaidNode，但Raid job继续运行的情况下，发现namenode的网络流量并没有变化，仍然居高不下。而当杀掉正在运行的3个Raid job以后，namenode流量立刻有一个大幅度的下降。由此可以推测流量上涨和Raid Job有关。
 
@@ -49,7 +49,7 @@ FileStatus结构主要如下：
 
 得到NN的网络流量结果如下：
 
-![test_confg](/assets/images/hdfs/test_confg.png)
+![test_confg](/images/hdfs/test_confg.png)
 
 1. 流量第一次增长是在200个blockSize=1M的文件进行raid
 2. raid job完成后，流量基本保持在一个新的高位。
@@ -65,7 +65,7 @@ FileStatus结构主要如下：
 ## 重新验证
 修改后进行了测试，通过对20个大小为200M，blockSize=1M的文件进行raid，在raid job运行时，NN的网络情况对比如下图所示：
 
-![fix_config](/assets/images/hdfs/fix_config.png)
+![fix_config](/images/hdfs/fix_config.png)
 
 14:05的峰值为修改前版本的raid job运行时NN out流量峰值，12M/s左右
 14:41的峰值为修改后的版本，峰值为3.5M/s左右.
