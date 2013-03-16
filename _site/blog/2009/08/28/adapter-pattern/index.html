@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title> 设计模式学习笔记（3）——适配器模式(Adapter Pattern)</title>
+    
+    <meta name="author" content="姜博">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">非纯种程序猿</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1> 设计模式学习笔记（3）——适配器模式(Adapter Pattern) </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>28 August 2009</strong>
+    </div>
+    <div class="content">
+      <p>一、 目的：</p>
+
+<p>将一个类的接口转换成客户希望的另一个接口。Adapter 模式使原本由于接口不兼容而不能一起工作的那些类可以一起工作。</p>
+
+<p>——GoF 《Design Pattern 》</p>
+
+<p>二、 描述：</p>
+
+<p>其实个人觉得Adapter模式在所有的模式当中算是比较简单的那种，也比较容易理解，就像我们日常生活中经常会使用USB转换器，将某种非USB接口的外设转换我们本本上提供的USB接口一样，在面向对象设计中，有时候我们不得不将将某个类的接口转换成另外一种我们需要的类型，最通常的情况可能是因为我们要想为现有的系统添加额外的一个现有的子系统，而两个系统提供的接口不同，因此，我们不得不讲其中一个转换成另一个，或者进行双向转换。</p>
+
+<p>说起来好像很容易理解，那么到底应该如何应用Adapter模式呢，还是举HeadFirst中的例子吧：</p>
+
+<p>假设现在我们有一个现有系统SimuDuck，提供一个鸭子的接口Duck，要求系统中的所有的类必须实现该Duck接口</p>
+
+<p><img src="/images/_clip_image002.gif" alt="" /></p>
+
+<p>（注：staruml中设置接口图形格式：右键图标->Format->seterotype->None,不过怎么把方法显示出来还么研究好）</p>
+
+<p>该接口提供两个方法，fly(),飞， quack(),叫。</p>
+
+<p>现在要向这个系统中天加一个由一些火鸡组成的子系统，火鸡实现的是火鸡接口Turkey：</p>
+
+<p><img src="/images/o_clip_image004_2_633891499875937500.gif" alt="" /></p>
+
+<p>该接口提供的方法功能包括,fly()飞，gobble()叫。</p>
+
+<p>现在要想将实现Turkey的具体火鸡类在现有的使用Duck接口的系统中使用，就必须将Turkey转换成Duck，实现起来很简单，类图如下：</p>
+
+<p><img src="/images/o_adapter_duck_turkey_4.jpg" alt="" /></p>
+
+<p>设计一个TurkeyAdapter，该适配器实现了Duck接口，并使用一个Turkey作为构造参数，在TurkeyAdapter中实现Duck接口的方法时，实际调用的是Turkey的方法，下面时代码实现：</p>
+
+<p>Duck接口：</p>
+
+<p>[java] view plaincopy
+public interface Duck {</p>
+
+<pre><code>public abstract void quack();  
+public abstract void fly();  
+</code></pre>
+
+<p>}<br/>
+MallardDuck具体鸭子类：</p>
+
+<p>[java] view plaincopy
+public class MallardDuck implements Duck {</p>
+
+<pre><code>public void quack(){  
+    System.out.println("MallardDuck quack");  
+}  
+public void fly(){  
+    System.out.println("MallardDuck fly");  
+}  
+</code></pre>
+
+<p>}<br/>
+注意，这里的实现quack()和fly()方法时使用简单的直接实现，实际中应该采用Strategey（策略）模式，以后再说该模式。</p>
+
+<p>Turkey接口：</p>
+
+<p>[java] view plaincopy
+public interface Turkey {</p>
+
+<pre><code>public void fly();  
+public void gobble();  
+</code></pre>
+
+<p>}<br/>
+实现Turkey的具体WildTurkey：</p>
+
+<p>[c-sharp] view plaincopy
+public class WildTurkey implements Turkey {</p>
+
+<pre><code>public void fly(){  
+    System.out.println("WildTurkey fly");  
+}  
+public void gobble(){  
+    System.out.println("WildTurkey gobble");  
+}  
+</code></pre>
+
+<p>}<br/>
+最关键的TurkeyAdapter：</p>
+
+<p>[java] view plaincopy
+public class TurkeyAdapter implements Duck {</p>
+
+<pre><code>Turkey turkey;  
+public TurkeyAdapter(Turkey turkey){  
+    this.turkey = turkey;  
+}  
+public void quack(){  
+    turkey.gobble();  
+}  
+public void fly(){  
+    turkey.fly();  
+}  
+</code></pre>
+
+<p>}<br/>
+该类拥有一个Turkey的实例变量，一个以Turkey作为参数构造方法，也就是说在构造时将要转换的Turkey对象作为构造参数传递给该适配器，当调用适配器的Duck接口的方法时，实际调用的是turkey对象的方法。</p>
+
+<p>在这里，由于示例比较简单，没有什么问题，在实践中，可能会出现被转换的类不具备目标对象的某种功能，例如，如果Duck中有一个swim()方法，很明显，Turkey不能游泳，也就没有可以调用的方法，通常的做法是抛出一个异常CanNotFindMethodException。</p>
+
+<p>最后是测试程序：</p>
+
+<p>[java] view plaincopy
+public class Client {</p>
+
+<pre><code>public static void main(String[] args){  
+    MallardDuck duck = new MallardDuck();  
+
+    WildTurkey wildTurkey = new WildTurkey();  
+    Duck turkeyAdapter = new TurkeyAdapter(wildTurkey);  
+
+    System.out.println("Duck...");  
+    testDuck(duck);  
+
+    System.out.println("TurkeyAdapter...");  
+    testDuck(turkeyAdapter);  
+}  
+static void testDuck(Duck duck){  
+    duck.fly();  
+    duck.quack();  
+}  
+</code></pre>
+
+<p>}<br/>
+该测试程序的输出结果为：</p>
+
+<p>[java] view plaincopy
+Duck...<br/>
+MallardDuck fly<br/>
+MallardDuck quack<br/>
+TurkeyAdapter...<br/>
+WildTurkey fly<br/>
+WildTurkey gobble</p>
+
+    </div>
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/categories.html#Design-ref">
+    		Design <span>3</span>
+    	</a></li>
+     
+    	<li><a href="/categories.html#Pattern-ref">
+    		Pattern <span>3</span>
+    	</a></li>
+    
+  
+
+
+    </ul>
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/blog/2009/08/26/post" title="Eclipse中修改Tomcat端口">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/blog/2009/08/28/singleton-desgin-pattern" title="设计模式学习笔记(1)——单例模式">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jiangbo'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+</div>
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2013 姜博
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+

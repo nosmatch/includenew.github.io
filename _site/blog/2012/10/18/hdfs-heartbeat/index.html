@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>HDFS源码学习(4)——DataNode心跳检测（HeartBeat）</title>
+    
+    <meta name="author" content="姜博">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">非纯种程序猿</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>HDFS源码学习(4)——DataNode心跳检测（HeartBeat） </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>18 October 2012</strong>
+    </div>
+    <div class="content">
+      <p>HDFS中DataNode的心跳检测通过FSNameSystem中的HeartbeatMonitor完成。代码结构如下：</p>
+
+<pre><code>  class HeartbeatMonitor implements Runnable {
+    /**
+     */
+    public void run() {
+      while (fsRunning) {
+        try {
+          heartbeatCheck();
+        } catch (Exception e) {
+          FSNamesystem.LOG.error(StringUtils.stringifyException(e));
+        }
+        try {
+          Thread.sleep(heartbeatRecheckInterval);
+        } catch (InterruptedException ie) {
+        }
+      }
+    }
+  }
+</code></pre>
+
+<p>代码很简单，心跳检测线程周期性调用heartbeatCheck()。</p>
+
+<h2>一、心跳检查——heartbeatCheck()</h2>
+
+<p>该方法主要用于检测是否有过期的心跳检测，如有，检测其上的block是否已经进行过重新备份。该线程每次只处理一个datanode。</p>
+
+<pre><code>  void heartbeatCheck() {
+    if (isInSafeMode()) {
+      // 安全模式下不做心跳检测
+      return;
+    }
+    boolean allAlive = false;
+    while (!allAlive) {
+      boolean foundDead = false;
+      DatanodeID nodeID = null;
+
+      // 获取第一个dead datanode
+      synchronized(heartbeats) {
+        for (Iterator&lt;DatanodeDescriptor&gt; it = heartbeats.iterator();
+             it.hasNext();) {
+          DatanodeDescriptor nodeInfo = it.next();
+          if (isDatanodeDead(nodeInfo)) {
+            foundDead = true;
+            nodeID = nodeInfo;
+            break;
+          }
+        }
+      }
+
+      // 申请fsnamesystem锁，删除dead datanode
+      if (foundDead) {
+        writeLock();
+        try {
+          synchronized(heartbeats) {
+            synchronized (datanodeMap) {
+              DatanodeDescriptor nodeInfo = null;
+              try {
+                nodeInfo = getDatanode(nodeID);
+              } catch (IOException e) {
+                nodeInfo = null;
+              }
+              if (nodeInfo != null &amp;&amp; isDatanodeDead(nodeInfo)) {
+                NameNode.stateChangeLog.info("BLOCK* NameSystem.heartbeatCheck: "
+                                             + "lost heartbeat from " + nodeInfo.getName());
+                removeDatanode(nodeInfo);
+              }
+            }
+          }
+        } finally {
+          writeUnlock();
+        }
+      }
+      allAlive = !foundDead;
+    }
+  }
+</code></pre>
+
+<h3>1.1 判断是否已死 —— isDatanodeDead（）</h3>
+
+<p>判断一个datanode是否已经dead的标准很简单，当前距该节点最后的更新时间差是否已经超过心跳检测的过期时间限制</p>
+
+<pre><code>private boolean isDatanodeDead(DatanodeDescriptor node) {
+    return (node.getLastUpdate() &lt;
+            (now() - heartbeatExpireInterval));
+  }
+</code></pre>
+
+<h3>1.2 删除datanode —— removeDatanode（）</h3>
+
+<pre><code>  private void removeDatanode(DatanodeDescriptor nodeInfo) {
+    synchronized (heartbeats) {
+      if (nodeInfo.isAlive) {
+        updateStats(nodeInfo, false);
+        //从heartbeats中移除
+        heartbeats.remove(nodeInfo);
+        //更新datanode状态
+        nodeInfo.isAlive = false;
+      }
+    }
+
+    nodeInfo.hasInitialBlockReport = false;
+    for (Iterator&lt;Block&gt; it = nodeInfo.getBlockIterator(); it.hasNext();) {
+      //移除该节点上的block
+      removeStoredBlock(it.next(), nodeInfo);
+    }
+    unprotectedRemoveDatanode(nodeInfo);
+    clusterMap.remove(nodeInfo);
+  }
+</code></pre>
+
+<h4>1.2.1 removeStoredBlock（）</h4>
+
+<p>该方法更新block->datanode的映射(blocksMap)，如果block还有效，有可能导致block备份发生</p>
+
+<pre><code>  void removeStoredBlock(Block block, DatanodeDescriptor node) {
+    if (NameNode.stateChangeLog.isDebugEnabled()) {
+      NameNode.stateChangeLog.debug("BLOCK* NameSystem.removeStoredBlock: "
+                                    +block + " from "+node.getName());
+    }
+    assert (hasWriteLock());
+    if (!blocksMap.removeNode(block, node)) {
+      if (NameNode.stateChangeLog.isDebugEnabled()) {
+        NameNode.stateChangeLog.debug("BLOCK* NameSystem.removeStoredBlock: "
+                                      +block+" has already been removed from node "+node);
+      }
+      return;
+    }
+
+    //
+    //检查是否需要备份删除的block
+    INode fileINode = blocksMap.getINode(block);
+    if (fileINode != null) {
+      //减小当前系统中安全block（备份数满足最小值的block）数量
+      decrementSafeBlockCount(block);
+      //更新需要备份的block数量
+      updateNeededReplications(block, -1, 0);
+    }
+
+    //
+    // 从excessblocks中删除改block，并从excessReplicateMap删除改datanode
+    Collection&lt;Block&gt; excessBlocks = excessReplicateMap.get(node.getStorageID());
+    if (excessBlocks != null) {
+      if (excessBlocks.remove(block)) {
+        excessBlocksCount--;
+        if (NameNode.stateChangeLog.isDebugEnabled()) {
+          NameNode.stateChangeLog.debug("BLOCK* NameSystem.removeStoredBlock: "
+              +block+" is removed from excessBlocks");
+        }
+        if (excessBlocks.size() == 0) {
+          excessReplicateMap.remove(node.getStorageID());
+        }
+      }
+    }
+
+    // 从corruptReplicas中移除该block
+    corruptReplicas.removeFromCorruptReplicasMap(block, node);
+  }
+</code></pre>
+
+<h5>1.2.1.1  BlocksMap.removeNode（）</h5>
+
+<p>其中BlocksMap.removeNode()方法如下：</p>
+
+<pre><code>  boolean removeNode(Block b, DatanodeDescriptor node) {
+    BlockInfo info = blocks.get(b);
+    if (info == null)
+      return false;
+
+    // 从datanode 的blocklist中移除block，并从block的datalist中移除datanode
+    boolean removed = node.removeBlock(info);
+
+    if (info.getDatanode(0) == null     // no datanodes left
+              &amp;&amp; info.inode == null) {  // does not belong to a file
+      //从blocksmap中移除该block
+      blocks.remove(b);  // remove block from the map
+    }
+    return removed;
+  }
+</code></pre>
+
+<h5>1.2.1.2 减小当前安全的block数 —— decrementSafeBlockCount()</h5>
+
+<p>减小当前副本数安全的的block数，此举有可能触发系统进入安全模式（safemode）</p>
+
+<pre><code>  void decrementSafeBlockCount(Block b) {
+    if (safeMode == null) // mostly true
+      return;
+
+    safeMode.decrementSafeBlockCount((short)countNodes(b).liveReplicas());
+  }
+</code></pre>
+
+<p>其中safeMode.decrementSafeBlockCount()代码如下：</p>
+
+<pre><code>synchronized void decrementSafeBlockCount(short replication) {
+
+  if (replication == safeReplication-1) {
+    //安全的block数减一
+    this.blockSafe--;
+    //检查是否需要进入到safemode
+    checkMode();
+  }
+}
+</code></pre>
+
+<p>SafeModeInfo.checkMode()代码如下：</p>
+
+<pre><code>    private void checkMode() {
+      //当安全的block数比例降至安全值以下，进入安全模式
+      if (needEnter()) {
+        enter();
+        // check if we are ready to initialize replication queues
+        if (canInitializeReplQueues() &amp;&amp; !isPopulatingReplQueues()) {
+          //初始化副本队列
+          initializeReplQueues();
+        }
+        reportStatus("STATE* Safe mode ON.", false);
+        return;
+      }
+      // 如果安全模式已经关闭或者门槛小于0，则跳出安全模式
+      if (!isOn() ||                           // safe mode is off
+          extension &lt;= 0 || threshold &lt;= 0) {  // don't need to wait
+        this.leave(true); // leave safe mode
+        return;
+      }
+
+      //之前已经进入安全模式，直接返回
+      if (reached &gt; 0) {  // threshold has already been reached before
+        reportStatus("STATE* Safe mode ON.", false);
+        return;
+      }
+      // 启动SafeModeMonitor线程
+      reached = now();
+      smmthread = new Daemon(new SafeModeMonitor());
+      smmthread.start();
+      reportStatus("STATE* Safe mode extension entered.", true);
+    }
+</code></pre>
+
+<h5>1.2.1.3 更新需要备份的列表 —— updateNeededReplications（）</h5>
+
+<pre><code>  /* updates a block in under replication queue */
+  void updateNeededReplications(Block block,
+                        int curReplicasDelta, int expectedReplicasDelta) {
+    writeLock();
+    try {
+    //计算当前副本数
+    NumberReplicas repl = countNodes(block);
+    //期望的副本数
+    int curExpectedReplicas = getReplication(block);
+    //将该block更新到需要备份的列表中（neededReplications）
+    neededReplications.update(block, 
+                              repl.liveReplicas(), 
+                              repl.decommissionedReplicas(),
+                              curExpectedReplicas,
+                              curReplicasDelta, expectedReplicasDelta);
+    } finally {
+      writeUnlock();
+    }
+  }
+</code></pre>
+
+<h4>1.2.2 移除datanode —— unprotectedRemoveDatanode</h4>
+
+<pre><code>  void unprotectedRemoveDatanode(DatanodeDescriptor nodeDescr) {
+    //重置清空datanode中block信息
+    nodeDescr.resetBlocks();
+    //从invlidateSet中移除datanode
+    removeFromInvalidates(nodeDescr.getStorageID());
+    if (NameNode.stateChangeLog.isDebugEnabled()) {
+      NameNode.stateChangeLog.debug(
+                                    "BLOCK* NameSystem.unprotectedRemoveDatanode: "
+                                    + nodeDescr.getName() + " is out of service now.");
+    }
+  }
+</code></pre>
+
+<h5>1.2.2.1 removeFromInvalidates()</h5>
+
+<pre><code>  private void removeFromInvalidates(String storageID) {
+    //从recentInvalidateSet中移除该datanode
+    Collection&lt;Block&gt; blocks = recentInvalidateSets.remove(storageID);
+    if (blocks != null) {
+      //从正在删除的block总数中减去当前节点上的block总数
+      pendingDeletionBlocksCount -= blocks.size();
+    }
+  }
+</code></pre>
+
+<h2>二、 处理心跳检测请求 —— handleHeartbeat()</h2>
+
+<p>NameNode只负责创建一个HeartbeatMonitor来通过每个datanode的最新更新时间周期性检查是否有过期的datanode，而每个datanode是否的最新更新时间是由datanode主动向namenode报告的，namenode通过handleHeartbeat()处理心跳请求。</p>
+
+<pre><code>  DatanodeCommand[] handleHeartbeat(DatanodeRegistration nodeReg,
+      long capacity, long dfsUsed, long remaining,
+      int xceiverCount, int xmitsInProgress) throws IOException {
+    DatanodeCommand cmd = null;
+    synchronized (heartbeats) {
+      synchronized (datanodeMap) {
+        DatanodeDescriptor nodeinfo = null;
+        try {
+          nodeinfo = getDatanode(nodeReg);
+        } catch(UnregisteredDatanodeException e) {
+          return new DatanodeCommand[]{DatanodeCommand.REGISTER};
+        }
+
+        // 检查该datanode是否需要被关闭，可以通过设置datanode的adminState为DECOMMISSIONED来关闭一个datanode
+        if (nodeinfo != null &amp;&amp; shouldNodeShutdown(nodeinfo)) {
+          setDatanodeDead(nodeinfo);
+          throw new DisallowedDatanodeException(nodeinfo);
+        }
+
+        if (nodeinfo == null || !nodeinfo.isAlive) {
+          return new DatanodeCommand[]{DatanodeCommand.REGISTER};
+        }
+
+        updateStats(nodeinfo, false);
+        nodeinfo.updateHeartbeat(capacity, dfsUsed, remaining, xceiverCount);
+        updateStats(nodeinfo, true);
+
+        //检查租约恢复状态
+        cmd = nodeinfo.getLeaseRecoveryCommand(Integer.MAX_VALUE);
+        if (cmd != null) {
+          return new DatanodeCommand[] {cmd};
+        }
+
+        ArrayList&lt;DatanodeCommand&gt; cmds = new ArrayList&lt;DatanodeCommand&gt;(2);
+        //检查正在备份中的副本
+        cmd = nodeinfo.getReplicationCommand(
+              maxReplicationStreams - xmitsInProgress);
+        if (cmd != null) {
+          cmds.add(cmd);
+        }
+        //检查无效的block
+        cmd = nodeinfo.getInvalidateBlocks(blockInvalidateLimit);
+        if (cmd != null) {
+          cmds.add(cmd);
+        }
+        if (!cmds.isEmpty()) {
+          return cmds.toArray(new DatanodeCommand[cmds.size()]);
+        }
+      }
+    }
+
+    //检查是否需要升级系统
+    cmd = getDistributedUpgradeCommand();
+    if (cmd != null) {
+      return new DatanodeCommand[] {cmd};
+    }
+    return null;
+  }
+</code></pre>
+
+    </div>
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/categories.html#HDFS-ref">
+    		HDFS <span>20</span>
+    	</a></li>
+    
+  
+
+
+    </ul>
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/blog/2012/10/18/hdfs-namenode-thread" title="HDFS源码学习（3）——NameNode中的线程">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/blog/2012/10/18/hdfs-namenode-replica-management" title="HDFS源码学习（5）——副本管理（Replica Management)">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jiangbo'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+</div>
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2013 姜博
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+

@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Ubuntu 9.04安装arm-linux-gcc交叉编译工具</title>
+    
+    <meta name="author" content="姜博">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">非纯种程序猿</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>Ubuntu 9.04安装arm-linux-gcc交叉编译工具 </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>06 May 2009</strong>
+    </div>
+    <div class="content">
+      <p>最近要开发嵌入式linux，但是手头上大多文档中介绍交叉编译环境的都是基于RedHat9的，这个版本虽说很经典，但是毕竟实在是太古老了，自己机器上本身装的是Ubuntu，因此小小的研究了一下，在ubuntu中安装交叉编译环境 arm-linux-gcc<br />下面所有yourname替换为你自己的位于/home目录下的用户名<br /><strong>首先是准本工作</strong>：<br />需要的安装包：<br />crosstool-0.43.tar.gz 可以在http://kegel.com/crosstool/crosstool-0.43.tar.gz获得<br />创建一个文件夹<br />mkdir /home/yourname/downloads也可以用mkdir ~/downloads<br />将crosstool-0.43.tar.gz复制到downloads目录下（下载完成后默认应该实在桌面上）<br /><br />另外，还有一些安装包：<br />binutils-2.16.1.tar.bz2&nbsp; <br />glibc-2.3.2.tar.bz2<br />glibc-linuxthreads-2.3.2.tar.bz2<br />gcc-3.3.6.tar.bz2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />linux-2.6.15.4.tar.bz2<br />gcc-4.1.0.tar.bz2&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br />linux-libc-headers-2.6.12.0.tar.bz2<br />gdb-6.5.tar.bz2<br />这些在安装过程中会自动下载，也可以自己提前下载好，放在/home/yourname/downloads下面，不过我建议提前下好，因为一会需要修改一下glibc里的一个文件。&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <br /><strong><br />下面是一些安装是可能遇到的问题，提前些出来，省得大家忙活半天编译到一半发现错了还得重新编译，如果你想见识一下这些问题，可以直接跳转到下面的安装过程</strong>。<br />1.安装过程中会提示缺少下面两个包<br />bison<br />flex<br />如果以前没有装过，下载安装一下（具体包名我忘记了，可以直接输入bison查看，如果没装过，会提示你可以下载哪些包安装，flex类似）<br />sudo apt-get install bison<br />sudo apt-get install flex<br />另外网上说还需要一个mm4，不过我装的时候没有提示，好象是安装flex时，解决依赖性时自动装上了。<br /><br />2.还有一个莫名其妙的错误，提示说gcc版本太旧或者未安装，但是你用sudo apt-get install gcc 的时后会发现gcc已经是最新版本了，事实上这个错误是因为gcc版本太新了。解决方法如下：<br />sudo apt-get install gcc-3.4<br />cd /usr/bin<br />sudo rm gcc<br />ln -s gcc-3.4 gcc<br /><br />3.安装是还出现了如下错误：<br />/home/xxs/crosstool-0.43/build/arm-arm9tdmi-linux-gnu/gcc-4.1.1-glibc-2.3.2/build-glibc/csu/version-info.h:1:1:&nbsp; missing terminating " character<br />系统在编译生成version.o时候发现version-info.h文件有错误<br /><br />解决方法是需要修改一个文件<br />解压glibc-2.3.2.tar.bz2<br />找到glibc-2.3.2/csu目录下的Makefile按如下修改<br />文件末尾有2处echo<br />echo<br />"/"Compiled on a $$os $$version system" /<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "on<br />`date +%Y-%m-%d`.//n/"" ;; /<br />改为：<br />echo<br />"/"Compiled on a $$os $$version system" /<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; "on<br />`date +%Y-%m-%d`.////n/"" ;; /<br />echo<br />"/"Available extensions://n/"";<br />改为：<br />echo<br />"/"Available extensions:////n/""&nbsp;&nbsp;&nbsp; /<br />保存并重新压缩为glibc-2.3.2.tar.bz2 覆盖原来downloads目录下的glibc-2.3.2.tar.bz2<br /><br /><strong>解决好上面的一些小问题就可以开始安装了</strong><br /><br />1.创建一个安装目录<br />sudo mkdir /opt/crosstool<br />这是因为安装文件默认是安装到这个目录里的<br /><br />2.为你自己添加权限<br />sudo chown yourname /opt/crosstool<br /><br />3.解压crosstools-0.43.tar.gz(此时安装包应该位于/home/yourname/downloads/目录下，不是的话自己改一下)<br />tar -zvxf crosstools-0.43.tar.gz<br />进入cross目录<br />cd cross-0.43<br />可以ls一下看看里面的文件，里面有一些脚本文件，具体功能可以到http://kegel.com/crosstool上查看FAQ<br /><br />4.运行./demo-arm.sh进行安装<br />这步要注意，网上有人说需要修改脚本文件里的一些设置，我没改也装上了，不知道为什么。<br /><br />5.剩下的就等着编译安装吧，很漫长～～<br /><br /><strong>修改环境变量</strong><br />安装完成后，默认的那装目录就是开始创建的那个/opt/crosstools/<br />1.添加环境变量<br />gedit ~/.bashrc<br />在最后添加如下<br />if [ -d /opt/crosstool/gcc-4.1.0-glibc-2.3.2/arm-unknow-linux-gnu ]; then<br />&nbsp;&nbsp;&nbsp; PATH=/opt/crosstool/gcc-4.1.0-glibc-2.3.2/arm-unknow-linux-gnu/bin:$PATH<br />fi<br />就是把安装的工具bin目录添加到PATH变量中。<br />保存<br />2.source ~/.bashrc<br />3.重启终端。<br />然后可以测试一下<br />arm-unknow-linux-gnu-gcc<br />正常的话就会出现<br />arm-unknow-linux-gnu-gcc: no input files<br />说明程序能用了。<br /><br />剩下的就是继续探索～<br />革命尚未成功，同志还需努力<br /></p>
+    </div>
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/categories.html#嵌入式开发-ref">
+    		嵌入式开发 <span>4</span>
+    	</a></li>
+    
+  
+
+
+    </ul>
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/blog/2009/05/05/post" title="Android SDK1.5开发体验">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/blog/2009/05/12/post" title="s3c2410开发日志——关于yaffs无法解压">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jiangbo'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+</div>
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2013 姜博
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+

@@ -1,6 +1,6 @@
 # This is the default format. 
 # For more see: https://github.com/mojombo/jekyll/wiki/Permalinks
-permalink: /:categories/:year/:month/:day/:title 
+permalink: /blog/:year/:month/:day/:title 
 
 exclude: [".rvmrc", ".rbenv-version", "README.md", "Rakefile", "changelog.md"]
 auto: true
@@ -12,7 +12,7 @@ pygments: true
 title : 非纯种程序猿
 tagline: Site Tagline
 author :
-  name : Jiang-Bo
+  name : 姜博
   email : jiang.bo.hit@gmail.com
   github : jiang-bo
   twitter : username
@@ -83,7 +83,7 @@ JB :
   comments :
     provider : disqus
     disqus :
-      short_name : jekyllbootstrap
+      short_name : jiangbo
     livefyre :
       site_id : 123
     intensedebate :
@@ -101,7 +101,7 @@ JB :
   analytics :
     provider : google 
     google : 
-        tracking_id : 'UA-123-12'
+        tracking_id : 'UA-34477986-1'
     getclicky :
       site_id : 
     mixpanel :

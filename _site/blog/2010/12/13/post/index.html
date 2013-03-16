@@ -1,0 +1,201 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>AWK学习笔记</title>
+    
+    <meta name="author" content="姜博">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">非纯种程序猿</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/pages.html">Pages</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>AWK学习笔记 </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>13 December 2010</strong>
+    </div>
+    <div class="content">
+      <p>
+</p><p><em>by BoBo</em></p>
+<p><em></em><br /><strong><span>一点历史</span></strong><br />&nbsp;&nbsp;&nbsp; AWK上世纪70年代诞生于传奇的Bell实验室，名字取于它的三位发明人，Alfred Aho, Peter Weinberger和 Brian Kernighan名字的首字母。发音类似《The AWK Programing Language》封面上的海雀（一种海鸟）的英文发音(auck[ɔ:k])。AWK最早出现在Unix V7中，Linux诞生后，AWK被LSB纳入其中，这意味者所有的Linux发行版都会提供awk的实现。目前linux上广发使用的是GNU实现的gawk，此外还有nawk，mawk，pgawk等版本。这些实现在AWK的语言规范基础上，扩展了一些其他功能，本文只关心最基础最通用的AWK规范，不探究相关实现的具体实现区别，欲知详情，请查看相关实现的手册。<br />以下是其中一位创始人Alfred V.Aho对AWK的描述。<br />&nbsp;&nbsp;&nbsp;&nbsp;<em>AWK is a language for processing files of text. A file is treated as a sequence of records, and by default each line is a record. Each line is broken up into a sequence of fields, so we can think of the first word in a line as the first field, the second word as the second field, and so on. An AWK program is of a sequence of pattern-action statements. AWK reads the input a line at a time. A line is scanned for each pattern in the program, and for each pattern that matches, the associated action is executed.&amp;quot; - Alfred V.Aho</em><br />尊重原文，不翻译。<br /><br /><strong><span>瞟一眼</span></strong><br />准备一份数据文件datafile<br /><br />Nike	green	X	10	10.00<br />Nike	blue	XL	10	10.00<br />Nike	red	 L	10	12.00<br />Adiddas	yellow	L	10	10.00<br />Adiddas	brown	M	10	10.00<br />Adiddas	gray	M	20	8.00<br /><br />打开终端，执行<br /><br /><span><span><strong>awk '/Nike/ {print $2}' datafile</strong><br /></span></span><br />输出<br /><br />green<br />blue<br />red<br /><br />解释下:<br />awk表示AWK解析器命令<br />两个'之间的部分表示这次执行的命令行脚本,其中/Nike/叫模式pattern,{print $2}叫操作action，print表示打印，$2表示每一记录中的第2个域。<br />datafile表示输入文件。<br />整个命令的意思表示：<br />对datafile中所有匹配Nike的行，执行print $2操作，打印含有Nike行中的第二个被空白符隔开的字段。<br />晕了么？来看点概念的解释吧:)<br /><br /><strong><span>一些枯燥的概念</span></strong><br /><strong>输入文件：</strong>待处理的数据文件datafile，每个输入文件为多个记录的集合<br /><strong>记录分割符：</strong>将输入文件划分为多个记录的符号，默认为'/n'<br /><strong>记录：</strong>默认数据文件中的每一行，如&amp;quot;Nike&nbsp;&nbsp;&nbsp; green&nbsp;&nbsp; X&nbsp;&nbsp; 10&nbsp; 10.00&amp;quot;，每个记录是多个域的集合<br /><strong>域分隔符：</strong>将每个记录划分为多个域的符号，默认为空白符<br /><strong>域：</strong>记录被域分割符划分后的单元，每个输入文件中的最小处理单元。如Nike， green，X，10，10.00分别为第一个记录的第1，2，3，4，5个域（注意，这里不是从0开始计数的）<br /><strong>Buffer：</strong>AWK中支持两种Buffer，域buffer和记录buffer<br />record buffer:表示整条记录，可以通过$0获取<br />field buffer:当前记录中的每一个field，可以通过$1,$2,$3获取。<br /><strong>内置变量：</strong><br />FS:Field separator，域分隔符，默认为空白符<br />RS:Record Separator，记录分隔符，默认为换行符<br />NF:Number of Fields in current record，当前记录中的域数<br />NR:Number of the current Record，当前的记录数<br />OFS:Output Field Separator，输出域分隔符，默认为空白符<br />ORS:Output Record Separator，输出记录分隔符，默认为换行符<br />FILENAME: Current filename，当前输入文件名<br /><br />针对一个awk命令行</p>
+<p><span><span><strong>awk 'pattern {action}' datafile</strong></span></span><br />awk的执行流程：<br />1.读取：awk会按行读取输入文件(Line by Line)<br />2.切分：将输入行划分为多个域<br />3.匹配：根据pattern匹配<br />4.执行：对匹配的行执行action<br /><br /><strong><span>命令行</span></strong><br />AWK的命令行语法有两种形式</p>
+<p><br />awk [options] -f program-file file...<br />awk [options] 'program-text' file...</p>
+<p><br />前者通过-f参数指定使用后面的名为program-file的文件作为AWK脚本处理输入文件file<br />后者表示 program-text是一段AWK命令行脚本，用于处理输入文件file.<br />options表示参数可选项，具体参数列表请参考相关手册。<br />基本语法：<br />当通过awk [options] 'program-text' file...方式执行awk时，program-text表示一段脚本。AWK的命令行脚本由模式和操作两部分组成：<br />pattern {action}，表示对输入文件中所有匹配pattern的行，执行action操作。<br />缺少pattern时，默认对输入文件中所有行执行action<br />缺少action时，默认向标准输出打印所有匹配pattern的行<br />两者都没有时，不进行任何操作。</p>
+<p><br /><strong><span>例子：</span></strong><br />awk '/for/ {print $1}'<strong>&nbsp;&nbsp; &nbsp;</strong>datafile 表示打印datafile中所有匹配含有for的行的第一个域（关于域，请看下文）<br />awk '/for/' &nbsp; &nbsp;datafile 表示打印datafile中所有包含for的行<br />awk '{print}' &nbsp; &nbsp;datafile 表示打印datafile中所有行<br /><br /><strong><span>模式pattern:</span></strong></p>
+<p><strong></strong>pattern分为Simple pattern和Range pattern两大类。<br /><strong><span>Simple Pattern</span></strong>包括：<br />a.BEGIN:标示对输入文件进行处理之前<br />b.END:标示对输入文件完成处理之后<br />c.EXPRESSION:表达式，包括正则表达式，算数表达式，逻辑表达式<br />d.NOTHING:什么都没有，表示无pattern，默认匹配所有行<br /><strong>Expression Pattern：</strong><br />正则表达式/regx/：<br />通过两个/标记的pattern为正则表达式，如/^bi/匹配所有以bi开始的记录，正则表达式语法与grep语法类似，不再赘述，请查看相关手册。<br />需要注意的是 ~/regx/表示不匹配，如~/^bi/表示不是以bi开始的所有记录。<br />算数表达式：<br />模式$3*$4&amp;gt;100 表示匹配所有$3与$4的积大于100的记录，类似的算数操作符还包括：<br />逻辑表达式：<br />模式 $NR&amp;gt;2 &amp;amp;&amp;amp; /^bi/ 表示匹配所有行数大于2以bi开头的的行， &amp;amp;&amp;amp;表示逻辑与<br /><br /><strong><span>Range Pattern</span></strong><br />Range Pattern用于匹配输入行中一个连续的区域，其语法由两个Simple Pattern构成：<br />pattern1, pattern2 {action}<br />pattern1表示从第一个匹配pattern1的行开始，执行action操作。<br />pattern2表示从第一个匹配pattern2的行开始，停止执行action操作。<br /><strong><span>例子：</span></strong><br /><br /><span>awk '/blue/,/yellow/ {print}' datafile</span></p>
+<p><br />表示从datafile中第一匹配blue的行开始执行print操作，打印整行，到第一个匹配yellow的行为止，停止打印。<br /><br /><span>awk '$NR==2, $NR==10 {print}' datafile</span><br /><br />表示打印datafile中的第2～10行。<br /><br /><strong><span>操作Action</span></strong><br />Action语句分为：表达式，输出，判断，循环，和控制语句。<br /><strong><span>表达式</span></strong><br />作为一门编程语言，AWK与其他语言一样，有变量，运算符，可以进行表达式计算。<br /><strong><span>变量</span></strong><br />AWK是弱类型的，变量无须声明，且第一次引用后就一直存在。所有的变量都被初始化为空字符串。变量名必须以字母开头，可以包含字母，数字和下划线。AWK支持三类变量，数字，字符串，数组。<br />需要特殊说明的是数组，数组只支持一维，且索引可以是数字也可以是字符串（因此我更倾向于它是个map）。可以通过<br /><br />delete arr[index]<br /><br />删除数组arr中index元素<br /><br /><strong><span>赋值操作符</span></strong><br />=	 assign result of right-hand-side expression to left-hand-side variable<br />++	Add 1 to variable<br />--	 Subtract 1 from variable<br />+=	Assign result of addition<br />-=	 Assign result of subtraction<br />*=	 Assign result of multiplication<br />/=	 Assign result of division<br />%=	Assign result of modulo<br />^=	 Assign result of exponentiation<br /><strong><span>输出语句</span></strong><br />AWK中有三种用于输出的内置函数：<br />print	 直接输出到终端<br />printf	 格式化输出到终端（与C中的printf类似）<br />sprintf	 格式化字符串（与C中不同的是，通过返回值方式返回新的字符串）<br />可以通过输出重定向将输出打印到其他地方：<br />&amp;gt; &amp;quot;file&amp;quot;	清空file，并打印输出到file<br />&amp;gt;&amp;gt; &amp;quot;file&amp;quot;	将输出追加到file末尾<br />| &amp;quot;command&amp;quot;	管道符，将输出作为command命令的输入。<br /><br /><strong><span>条件判断</span></strong><br /><strong>if-else语法：</strong><br /><br />if (条件语句)<br />执行语句1<br />else<br />执行语句2<br /><br /><strong>例子:</strong><br /><br /><span>if(NR&lt;3)<br />print $2<br />else<br />print $3</span><br /><br /><span>循环</span><br /><strong><span>for循环</span></strong><br /><strong>语法<br /></strong><br />for(初始条件;限制条件;条件更新)<br />执行语句<br /><br /><strong>例子</strong><br /><br /><span>for(i=1; i&lt;NR; i++)<br />{<br />total +=$i;<br />count++<br />}</span><br /><br /><span><strong>do-while循环</strong></span><br /><strong>语法</strong><br /><br />do<br />执行语句<br />while(条件)<br /><br /><strong>例子</strong><br /><br /><span>i=1<br />do {<br />print $0<br />i++<br />} while (i&lt;=10)</span><br /><br />AWK同样支持break,continue两个循环控制语句。<br /><br /><span><strong>脚本编程</strong></span><br />上文主要讲述了命令行下，AWK可以进行操作的基本知识，事实上，AWK作为一种编程语言，可以独立写成脚本文件，采用<br /><br /><span>awk [options] -f script-file inputfile...</span><br /><br />的方式执行。<br />通常一个awk包含三段式基本结构<br /><br />--------BEGIN区----------<br />|	BEGIN {初始化操作 } |<br />--------命令执行----------<br />|	pattern	{action} &nbsp; &nbsp; &nbsp; |<br />|	...<br />|	pattern	{action} &nbsp; &nbsp; &nbsp; |<br />---------END区-----------<br />|	EDN &nbsp;{结尾操作} &nbsp; &nbsp; &nbsp; |<br />----------------------------<br />BEGIN语句进行文件处理前的初始化操作，如定义FS，定义变量值等。该语句在一次文件处理过程中只在处理前执行一次<br />中间的命令执行是对每一个输入记录都进行的操作，语法与上述的基础语法一样<br />END区只在文件处理完成后执行一次。<br />例子<br /><br /><span><span>BEGIN { FS=: }<br />/for/ {print $2}<br />END {print "this is end!" }</span><br /></span><br />先定义域分隔符为":"，然后对所有匹配for的记录，打印第2个域，文件处理完后打印"this is end!"<br /><br /><span><span><strong>内置函数</strong></span></span><br />AWK提供一些内置函数。<br />字符串内置函数：<br />sub (regex, substr), 使用substr替换匹配自左向右做大匹配regex的部分。<br />gsub (regex,substr), 与sub类似，只是在全文中进行替换<br />length(string), 获取string字符串的长度<br />toupper(string), 将string转换为大写<br />tolower(string), 将string转换为小写<br />split(string, array, field separator), 将string以field separator为分隔符分割为数组存储到array中。<br />以上只是常用的一些内置函数，其他请参考相关手册<br /><br /><span><strong>示例</strong></span><br />分析日志，现有一份日志pic.log，格式如下，需要提取出其中的url链接<br /><br />INFO 10/18/2010 00:00:05--offerId=[836952303]. url=[http://f7.images22.51img1.com/6000/hw3255311/7205a450f1ea2751f31aa8c3ad1dd2be.jpg].<br />INFO 10/18/2010 00:00:05--offerId=[836952303]. url=[http://fb.images22.51img1.com/6000/hw3255311/bfe077567231f7d8efae4a1ac1b19477.jpg].<br />INFO 10/18/2010 00:00:05--offerId=[836952303]. url=[http://f6.images22.51img1.com/6000/hw3255311/6106d6366351d32c68e3f8a332b52da9.jpg].<br />INFO 10/18/2010 00:00:05--offerId=[836952303]. url=[http://f6.images22.51img1.com/6000/hw3255311/6106d6366351d32c68e3f8a332b52da9.jpg].<br /><br /><strong><span>脚本</span></strong><br /><br /><span>awk -F "[" '{split($3, url, "]");print url[1]}' pic.log</span><br /><br />通过 -F ":"定义域分隔符为"[",这样每行数据会被划分为三个域<br /><br />INFO 10/18/2010 00:00:05--offerId=	--[-- 836952303]. url=	--[-- http://f7.images22.51img1.com/6000/hw3255311/7205a450f1ea2751f31aa8c3ad1dd2be.jpg].<br /><br />所需要提取的url位于第三个域中，通过内置函数<br /><br /><span>split($3, url, "]")</span><br /><br />将第三个域以"]"分割，存储到url数组中，url数组为["http://f7.images22.51img1.com/6000/hw3255311/7205a450f1ea2751f31aa8c3ad1dd2be.jpg", "."]<br />url[1]即为所需的url<br /><br /><strong><span>参考资料</span></strong><br />a. man awk<br />b. AWK wiki，http://en.wikipedia.org/wiki/AWK<br />c.《AWK学习笔记》http://man.lupaworld.com/content/manage/ringkee/awk.htm</p>
+    </div>
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/categories.html#Linux-ref">
+    		Linux <span>12</span>
+    	</a></li>
+    
+  
+
+
+    </ul>
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/blog/2010/10/26/post" title="Linux启动过程分析">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/blog/2011/01/17/post" title="Zero-Copy&amp;sendfile浅析">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jiangbo'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+</div>
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2013 姜博
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+      </footer>
+
+    </div>
+
+    
+  </body>
+</html>
+
