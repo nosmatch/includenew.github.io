@@ -1,4 +1,5 @@
 
+http://jiang-bo.github.com/about/index.html
 http://jiang-bo.github.com/algorithm/alg/index.html
 http://jiang-bo.github.com/algorithm.html
 http://jiang-bo.github.com/archive.html
@@ -43,7 +44,6 @@ http://jiang-bo.github.com/blog/2012/02/10/jvm-luncher-lifecycle
 http://jiang-bo.github.com/blog/2012/02/10/compile-openjdk7-on-centos6
 http://jiang-bo.github.com/blog/2012/01/04/how-to-get-ip-and-send-to-gtalk-by-ruby
 http://jiang-bo.github.com/blog/2011/12/31/my2011and2012
-http://jiang-bo.github.com/blog/2011/12/29/jekyll-introduction
 http://jiang-bo.github.com/blog/2011/12/17/rails_new_optimize_bundle_install
 http://jiang-bo.github.com/blog/2011/12/17/rails-common-error
 http://jiang-bo.github.com/blog/2011/12/07/clean-dns-cache-on-chrome
