@@ -97,6 +97,5 @@ HADOOP-7001提供了一个Reconfigure接口用于定义可动态配置的的行�
  
 ###3.具体使用
 登录到NN，修改配置文件，通过web访问 http://hdfsnn:port/nnconfchange来查看配置项，点击apply可以是新的配置项生效，如果配置项变更出错会返回500.    
-![Reconfig_apply](/images/hdfs/reconfig_apply.png)
 
 
