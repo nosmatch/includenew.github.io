@@ -6,7 +6,6 @@ category: HDFS
 tags: [HDFS]
 ---
 {% include JB/setup %}
-[[PageOutline]]
 
 ### 一、背景 
 HDFS原始实现两个集群间数据复制使用的是DistCp的方式，主要通过提交Job的并行读取文件数据，写入到目标文件，这种方式需要使所有block数据经由源集群DN-》client节点-》目标集群DN，效率较低，Facebook实现了一个FastCopy来提升集群间copy的效率，目前已在社区提交了一个issue[HDFS-2139](https://issues.apache.org/jira/browse/HDFS-2139 HDFS-2139)，尚未提交实现。本文主要参考Facebook的FastCopy实现。
