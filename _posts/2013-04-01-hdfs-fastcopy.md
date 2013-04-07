@@ -56,7 +56,7 @@ DataNode.copyBlock()的具体实现分为三种情况：
 ### 三、实现
 #### 3.1 类图结构
 
-![](/images/hdfs/RFastCopy-class.png)
+![](/images/hdfs/FastCopy-class.png)
 #### 3.2 实现逻辑
 
 1. FastCopy首先处理命令行参数，提取源文件和目标文件path，为每一个src：dst对构建FastCopyFileRequest
