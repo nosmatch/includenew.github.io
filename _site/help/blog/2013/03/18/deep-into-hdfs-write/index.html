@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>HDFS深入剖析(1)-写入流程</title>
+    <meta name="description" content="">
+    <meta name="author" content="姜博">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">非纯种程序猿</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/algorithm.html">Algorithm</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>HDFS深入剖析(1)-写入流程 </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>18 March 2013</strong>
+    </div>
+    <div class="content">
+      <p>初学HDFS时分析过HDFS的大致的写入流程：</p>
+
+<ol>
+<li>Client向NN发起create请求</li>
+<li>NN校验文件是否存在，client是否有权写，校验通过，向Client办法lease</li>
+<li>获得lease后，client通过本地DFSOutputStream向DN写入数据</li>
+<li>对于每个写入的block，DFSOutputStream先想NN发起addBlock请求</li>
+<li>NN响应addblock请求，分配DN列表</li>
+<li>client根据返回的DN列表，想该列表构成的DN pipeline写入数据</li>
+<li>写入时按照packet进行传输，DFSOutputStream中通过dataqueue维护写入的packet队列，以及一个ackqueue维护所有成功写入并接受到ack消息的packet</li>
+<li>所有数据写完后，client向NN发起complete请求，关闭文件</li>
+</ol>
+
+
+<p>上述是HDFS写入的主要流程，也是大部分资料描述的过程，本文叫做“深入剖析”，与之前文章的区别主要是重点描述些detail的问题，以及异常的处理，如：client短packet如何写入，create请求如何处理，block放置的实现，pipeline如何构建，pipeline写入失败时如何处理等</p>
+
+<h2>一、Create请求处理</h2>
+
+<p>当client通过</p>
+
+<pre><code>FSDataOutputStream output = FileSystem.create(Path path);
+</code></pre>
+
+<p>打开一个文件时，实际上有client端向NN发起一个create RPC请求，具体流程如下：</p>
+
+<ol>
+<li>client端：FileSystem.create()调用子类实现的create方法，HDFS中默认使用DistrbutedFileSysytem的实现</li>
+<li>DistributedFileSystem.create()方法首先更新stats统计，而后通过DFSClient.create()完成实际的create操作</li>
+<li>DFSClient首先在client端检查当前client是否还在运行，否则跑出IOExcpetion</li>
+<li>DFSClient获取client端权限信息，默认是777</li>
+<li>根据获得的权限信息构建一个DFSOutputStream，并返回</li>
+<li>DFSOutputStream的实例化过程首先计算该Stream中chunk和packet的大小</li>
+</ol>
+
+
+<h2>二、Client端数据写入</h2>
+
+<h2>三、addBlock请求处理</h2>
+
+<h2>四、DN pipeline构建</h2>
+
+<h2>五、pipeline写入流程</h2>
+
+<h2>六、数据写入异常处理</h2>
+
+<h2>七、complete处理</h2>
+
+<h2>八、append处理</h2>
+
+    </div>
+
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/blog/2013/03/09/nn-network-out" title="HDFS RAID导致NameNode out网络流量异常飙升">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next disabled"><a>Next &rarr;</a>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jiangbo'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+</div>
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2013 姜博
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+    <script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F85545761b56f725733aef53ca8e6f717' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+      </footer>
+
+    </div>
+
+    
+
+  </body>
+</html>
+

@@ -13,6 +13,8 @@ http://jiang-bo.github.com/rss.xml
 http://jiang-bo.github.com/sitemap.txt
 http://jiang-bo.github.com/tags.html
 
+http://jiang-bo.github.com/blog/2013/04/01/hdfs-fastcopy
+http://jiang-bo.github.com/blog/2013/03/18/deep-into-hdfs-write
 http://jiang-bo.github.com/blog/2013/03/09/nn-network-out
 http://jiang-bo.github.com/blog/2013/01/28/my2012
 http://jiang-bo.github.com/blog/2013/01/16/hadoop-reconfigurable

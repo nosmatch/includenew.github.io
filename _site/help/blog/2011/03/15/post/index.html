@@ -1,0 +1,278 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Mac OSX安装Git</title>
+    
+    <meta name="author" content="姜博">
+
+    <!-- Enable responsive viewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/themes/twitter/bootstrap/css/bootstrap.2.2.2.min.css" rel="stylesheet">
+    <link href="/assets/themes/twitter/css/style.css?body=1" rel="stylesheet" type="text/css" media="all">
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+
+    <!-- atom & rss feed -->
+    <link href="/atom.xml" type="application/atom+xml" rel="alternate" title="Sitewide ATOM Feed">
+    <link href="/rss.xml" type="application/rss+xml" rel="alternate" title="Sitewide RSS Feed">
+
+  </head>
+
+  <body>
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-narrow">
+          <a class="brand" href="/">非纯种程序猿</a>
+          <ul class="nav">
+            
+            
+            
+
+
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/algorithm.html">Algorithm</a></li>
+      	
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/archive.html">Archive</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/categories.html">Categories</a></li>
+      	
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+      
+      	
+      	<li><a href="/tags.html">Tags</a></li>
+      	
+      
+    
+  
+
+
+
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container-narrow">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>Mac OSX安装Git </h1>
+</div>
+
+<div class="row-fluid post-full">
+  <div class="span12">
+    <div class="date">
+      <span>15 March 2011</strong>
+    </div>
+    <div class="content">
+      <p><strong>一、安装Git</strong></p>
+<p class="p2"><span class="s1">由于mac git的地址<a href="http://code.google.com/p/git-osx-installer/"><span class="s2">http://code.google.com/p/git-osx-installer/</span></a>被墙，被迫使用源码安装，源码可以从<a href="http://kernel.org/pub/software/scm/git/"><span class="s2">http://kernel.org/pub/software/scm/git/</span></a></span><span class="s3">下载，编译源码需要先安装xcode，参考<a href="http://developer.apple.com/"><span class="s4">http://developer.apple.com</span></a>。</span></p>
+<p class="p3">编译安装</p>
+<p class="p3">1.解压</p>
+<p class="p3">&nbsp;&nbsp; &nbsp;&nbsp;tar xjvf git-1.7.4.1.tar.tar.bz2</p>
+<p class="p3">2. 编译</p>
+<p class="p3">&nbsp;&nbsp; &nbsp;&nbsp;cd git-1.7.4.1</p>
+<p class="p3">&nbsp;&nbsp; &nbsp;&nbsp;./configure --prefix=/usr/local</p>
+<p class="p3">&nbsp;&nbsp; &nbsp;&nbsp;make</p>
+<p class="p3">3.安装</p>
+<p class="p3">&nbsp;&nbsp; &nbsp;&nbsp;sudo make install</p>
+<p class="p4">&nbsp;</p>
+<p class="p3">Ok 了，which git试一下～</p>
+<p class="p5"><strong>二、设置SSH</strong></p>
+<p class="p3">github使用SSH链接，需要设置SSH</p>
+<p class="p3">1.检查SSH key</p>
+<p class="p3">&nbsp;&nbsp; &nbsp; cd ~/.ssh</p>
+<p class="p3">2.备份已有的key，（如果有的话）</p>
+<p class="p3">&nbsp;&nbsp; &nbsp; mkdir key_backup</p>
+<p class="p3">&nbsp;&nbsp; &nbsp; mv id_rsa* key_backup</p>
+<p class="p3">3.生成SSH key</p>
+<p class="p3">$ ssh-keygen -t rsa -C <a href="mailto:jiang.bo.hit@gmail.com"><span class="s5">jiang.bo.hit@gmail.com</span></a></p>
+<p class="p3">Generating public/private rsa key pair.</p>
+<p class="p3">Enter file in which to save the key (/Users/jiangbo/.ssh/id_rsa):&nbsp;</p>
+<p class="p3">Enter passphrase (empty for no passphrase):</p>
+<p class="p3">Enter same passphrase again:</p>
+<p class="p3">Your identification has been saved in yes.</p>
+<p class="p3">Your public key has been saved in id_rsa.pub.</p>
+<p class="p3">The key fingerprint is:</p>
+<p class="p3">fb:c4:b0:e0:47:fd:be:e0:fb:ea:73:ef:a8:29:d5:22 <a href="mailto:jiang.bo.hit@gmail.com"><span class="s5">jiang.bo.hit@gmail.com</span></a></p>
+<p class="p3">The key's randomart image is:</p>
+<p class="p3">+--[ RSA 2048]----+</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; .&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . S ..&nbsp;&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp; . oE=o..&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; . +o+..&nbsp;&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ..+.+..&nbsp;&nbsp; |</p>
+<p class="p3">|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; oOB=+o&nbsp; |</p>
+<p class="p3">+-----------------+</p>
+<p class="p3">4.将SSH key添加到GitHub</p>
+<p class="p3">登录到GitHub页面，Account Settings-&gt;SSH Public Keys-&gt;Add another key</p>
+<p class="p3">将生成的key(id_rsa.pub文件）内容copy到输入框中，save。</p>
+<p class="p4"><img src="http://hi.csdn.net/attachment/201103/15/0_1300170843sWhI.gif" alt="" /></p>
+<p class="p3">5.测试链接</p>
+<p class="p6"><span class="s3">$ ssh <a href="mailto:git@github.com"><span class="s5">git@github.com</span></a></span></p>
+<p class="p3">The authenticity of host '<a href="http://github.com/"><span class="s5">github.com</span></a> (207.97.227.239)' can't be established.</p>
+<p class="p3">RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.</p>
+<p class="p3">Are you sure you want to continue connecting (yes/no)? yes</p>
+<p class="p4">&nbsp;</p>
+<p class="p3">PTY allocation request failed on channel 0</p>
+<p class="p3">Hi jiang-bo! You've successfully authenticated, but GitHub does not provide shell access.</p>
+<p class="p3">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection to <a href="http://github.com/"><span class="s5">github.com</span></a> closed.</p>
+<p class="p3">别担心，这是正常情况。</p>
+<p class="p5"><strong>三、设置个人信息</strong></p>
+<p class="p3">$ git config --global <a href="http://user.name/"><span class="s5">user.name</span></a> "Bo Jiang"</p>
+<p class="p3">$ git config --global user.email "jiang.bo.hit@gmail.com"</p>
+<p class="p3">&nbsp;</p>
+<p>&nbsp;</p>
+    </div>
+
+  
+    <ul class="tag_box inline">
+      <li><i class="icon-folder-open"></i></li>
+      
+      
+
+
+  
+     
+    	<li><a href="/categories.html#Mac-ref">
+    		Mac <span>4</span>
+    	</a></li>
+    
+  
+
+
+    </ul>
+    
+
+    
+
+    <hr>
+    <div class="pagination">
+      <ul>
+      
+        <li class="prev"><a href="/blog/2011/03/10/post" title="Java基础（1）－泛型">&larr; Previous</a></li>
+      
+        <li><a href="/archive.html">Archive</a></li>
+      
+        <li class="next"><a href="/blog/2011/08/02/use-mat-analysis-dump-file" title="使用MAT进行dump文件分析">Next &rarr;</a></li>
+      
+      </ul>
+    </div>
+    <hr>
+    
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jiangbo'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+  </div>
+</div>
+
+      </div>
+      <hr>
+      <footer>
+        <p>&copy; 2013 姜博
+          with help from <a href="http://jekyllbootstrap.com" target="_blank" title="The Definitive Jekyll Blogging Framework">Jekyll Bootstrap</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+        </p>
+    <script type="text/javascript">
+	var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+	document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F85545761b56f725733aef53ca8e6f717' type='text/javascript'%3E%3C/script%3E"));
+    </script>
+      </footer>
+
+    </div>
+
+    
+
+  </body>
+</html>
+
