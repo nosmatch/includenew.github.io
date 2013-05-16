@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "如何用ruby获取本机IP&发送給Gtalk"
+title: "如何用ruby获取本机IP并发送給Gtalk"
 date: 2012-01-04 17:35
 comments: true
 categories: 
