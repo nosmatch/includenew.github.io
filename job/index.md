@@ -8,6 +8,7 @@ description: ""
 ** 阿里集团长期招聘以下职位，不在列表中的职位（Android, IOS开发等），只要你够牛，感兴趣均可联系我: **
 
 ** Gtalk & Gmail: jiang.bo.hit at gmail.com **
+** 工作地点：主要杭州，部分北京
 
 
 #### 一、资深java开发工程师 
